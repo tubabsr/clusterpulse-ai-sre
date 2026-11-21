@@ -16,7 +16,7 @@ spec:
       labels:
         app: k8s-ai-rca-agent
       annotations:
-        clusterpulse.io/image-revision: "f8215432d5d40b86b349d945fe65b5e0e3d9887d"
+        clusterpulse.io/image-revision: "44b215544cb1071e4b06185df5cb057e8724c46b"
     spec:
       serviceAccountName: k8s-ai-rca-agent
       securityContext:
@@ -26,7 +26,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
       - name: agent
-        image: "ghcr.io/singhgauravlinux-coder/clusterpulse-ai-sre:latest"
+        image: "ghcr.io/tubabsr/clusterpulse-ai-sre:latest"
         imagePullPolicy: Always
         ports:
         - name: http
