@@ -1,0 +1,26 @@
+# kube-prometheus-stack Helm values for an on-premises cluster.
+# Review storageClassName and capacity before installing.
+grafana:
+  enabled: false  # ClusterPulse provides the primary dashboard.
+alertmanager:
+  enabled: true
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 15d
+    retentionSize: 5GB
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          # Set this to a StorageClass available in your on-prem cluster.
+          storageClassName: local-path
+          resources:
+            requests:
+              storage: 8Gi
+kubeStateMetrics:
+  enabled: true
+prometheus-node-exporter:
+  enabled: true

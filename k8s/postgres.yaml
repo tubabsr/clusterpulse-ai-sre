@@ -1,0 +1,45 @@
+# PostgreSQL for the clusterpulse namespace (separate from any other namespace's database).
+# Requires secret clusterpulse-postgres-auth (POSTGRES_USER/PASSWORD/DB) - see README / runbook.
+apiVersion: v1
+kind: Service
+metadata:
+  name: clusterpulse-postgres
+  namespace: clusterpulse
+spec:
+  clusterIP: None
+  selector: {app: clusterpulse-postgres}
+  ports: [{name: pg, port: 5432}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clusterpulse-postgres
+  namespace: clusterpulse
+spec:
+  serviceName: clusterpulse-postgres
+  replicas: 1
+  selector:
+    matchLabels: {app: clusterpulse-postgres}
+  template:
+    metadata:
+      labels: {app: clusterpulse-postgres}
+    spec:
+      securityContext: {runAsUser: 999, runAsGroup: 999, fsGroup: 999, runAsNonRoot: true}
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports: [{containerPort: 5432, name: pg}]
+        envFrom: [{secretRef: {name: clusterpulse-postgres-auth}}]
+        env: [{name: PGDATA, value: /var/lib/postgresql/data/pgdata}]
+        readinessProbe:
+          exec: {command: ["sh","-c","pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]}
+          periodSeconds: 10
+        resources:
+          requests: {cpu: 100m, memory: 256Mi}
+          limits: {memory: 500Mi}
+        volumeMounts: [{name: data, mountPath: /var/lib/postgresql/data}]
+  volumeClaimTemplates:
+  - metadata: {name: data, labels: {app: clusterpulse-postgres}}
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources: {requests: {storage: 5Gi}}

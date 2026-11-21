@@ -1,0 +1,22 @@
+# Requires Traefik Kubernetes CRDs (traefik.io/v1alpha1).
+# Create the "clusterpulse-users" Secret separately; do not commit its contents.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: clusterpulse-basic-auth
+  namespace: clusterpulse
+spec:
+  basicAuth:
+    secret: clusterpulse-users
+    realm: "ClusterPulse AI - Authorized Users"
+    removeHeader: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: clusterpulse-https-redirect
+  namespace: clusterpulse
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

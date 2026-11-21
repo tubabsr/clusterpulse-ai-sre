@@ -1,0 +1,156 @@
+name: Build and publish ClusterPulse image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**"
+      - "tests/**"
+      - "Dockerfile"
+      - "requirements.txt"
+      - ".dockerignore"
+      - ".github/workflows/build-image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: clusterpulse-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-publish-update-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Run unit tests
+        run: |
+          pip install -r requirements-dev.txt
+          python -m pytest -q
+
+      - name: Validate dashboard JavaScript syntax
+        run: |
+          python - <<'PY'
+          import re, pathlib
+          html = pathlib.Path("app/dashboard.html").read_text(encoding="utf-8")
+          pathlib.Path("/tmp/dashboard.js").write_text(html[html.index("<script>")+8:html.rindex("</script>")])
+          PY
+          node --check /tmp/dashboard.js
+
+      - name: Validate Python syntax
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in Path("app").rglob("*.py"):
+              ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          print("Python syntax validation passed")
+          PY
+
+      - name: Set image name
+        id: image
+        shell: bash
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "name=${IMAGE}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image tags
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:sha-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Update Kubernetes deployment image and revision
+        env:
+          IMAGE_NAME: ${{ steps.image.outputs.name }}
+          IMAGE_REVISION: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          path = Path("k8s/deployment.yaml")
+          text = path.read_text(encoding="utf-8")
+
+          image = f'{os.environ["IMAGE_NAME"]}:latest'
+          revision = os.environ["IMAGE_REVISION"]
+
+          # Update the agent container image (the manifest has one image field).
+          lines = text.splitlines()
+          image_updated = False
+          for index, line in enumerate(lines):
+              if line.lstrip().startswith("image:"):
+                  indent = line[:len(line) - len(line.lstrip())]
+                  lines[index] = f'{indent}image: "{image}"'
+                  image_updated = True
+                  break
+          if not image_updated:
+              raise SystemExit("Could not find image: in k8s/deployment.yaml")
+
+          text = "\n".join(lines) + "\n"
+
+          # A changed pod-template annotation forces a rollout even when :latest
+          # remains the image reference.
+          marker = "        app: k8s-ai-rca-agent\n"
+          annotation = (
+              marker
+              + "      annotations:\n"
+              + f'        clusterpulse.io/image-revision: "{revision}"\n'
+          )
+          if "clusterpulse.io/image-revision:" in text:
+              import re
+              text = re.sub(
+                  r'(?m)^        clusterpulse\.io/image-revision:.*$',
+                  f'        clusterpulse.io/image-revision: "{revision}"',
+                  text,
+              )
+          elif marker in text:
+              text = text.replace(marker, annotation, 1)
+          else:
+              raise SystemExit("Could not find pod-template labels to add revision annotation")
+
+          path.write_text(text, encoding="utf-8")
+          print(f"Updated deployment to {image} (revision {revision})")
+          PY
+
+      - name: Commit updated deployment manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add k8s/deployment.yaml
+          if git diff --cached --quiet; then
+            echo "Deployment manifest already current."
+          else
+            git commit -m "chore(deploy): update ClusterPulse image to ${GITHUB_SHA::12}"
+            git push
+          fi

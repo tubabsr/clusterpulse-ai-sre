@@ -1,0 +1,1758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClusterPulse AI | Kubernetes SRE</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%2338e8ff%22/%3E%3Cstop offset=%221%22 stop-color=%22%238b7bff%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22url%28%23g%29%22/%3E%3Cpath d=%22M32 10 C34 24 40 30 54 32 C40 34 34 40 32 54 C30 40 24 34 10 32 C24 30 30 24 32 10Z%22 fill=%22%23071321%22/%3E%3Ccircle cx=%2250%22 cy=%2214%22 r=%224%22 fill=%22%233dffb5%22/%3E%3C/svg%3E"><meta name="theme-color" content="#070d19">
+<style>
+:root{--bg:#090f1b;--panel:#111b2b;--panel2:#152238;--line:#23334b;--muted:#91a3bb;--text:#edf4ff;--cyan:#5ed6e8;--green:#51d6a2;--amber:#ffc36a;--red:#ff7185;--blue:#7ea8ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#142746 0,transparent 38%),var(--bg);color:var(--text);font:14px Inter,ui-sans-serif,system-ui,Segoe UI,Arial}
+.wrap{max-width:1500px;margin:auto;padding:26px}.top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:13px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#42d7d0,#6585ff);display:grid;place-items:center;color:#071321;font-size:22px;font-weight:900;box-shadow:0 8px 30px #40cdd533}.brand h1{font-size:20px;margin:0;letter-spacing:.2px}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}.topright{display:flex;align-items:center;gap:12px}.pill{border:1px solid #275c50;background:#102b2a;color:#72e0b6;padding:8px 12px;border-radius:30px;font-size:12px}.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:7px;box-shadow:0 0 10px var(--green)}button,select{background:#17253a;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px 12px}button{cursor:pointer}button:hover{border-color:var(--cyan)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,#142137,#101a29);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 10px 30px #0002}.metric-head{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.metric{font-size:31px;font-weight:750;letter-spacing:-1px;margin:12px 0 4px}.sub{color:var(--muted);font-size:11px}.cyan{color:var(--cyan)}.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}.blue{color:var(--blue)}.section{display:flex;justify-content:space-between;align-items:center;margin:25px 0 12px}.section h2{font-size:15px;margin:0}.section span{color:var(--muted);font-size:12px}.two{display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.chart{height:210px;display:flex;align-items:end;gap:8px;padding:18px 8px 4px;border-bottom:1px solid var(--line)}.barcol{flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;height:100%;gap:8px}.bar{width:min(34px,75%);border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#60d9e8,#5b7cff);min-height:3px;box-shadow:0 0 16px #5cbded22}.barlabel{font-size:10px;color:var(--muted)}.legend{display:flex;gap:15px;color:var(--muted);font-size:11px;margin-top:12px}.legend i{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;color:var(--muted);font-weight:500;font-size:11px;padding:12px;border-bottom:1px solid var(--line)}td{padding:13px 12px;border-bottom:1px solid #202e42;font-size:12px}tr:last-child td{border:0}.status{border-radius:20px;padding:5px 9px;font-size:10px;background:#24334a;color:#c8d7ec}.status.ok{background:#12352e;color:#6fe0b3}.status.bad{background:#3b202d;color:#ff8da0}.status.warn{background:#3a3020;color:#ffd18a}.sev{font-weight:700;font-size:10px}.sev.CRITICAL,.sev.HIGH{color:var(--red)}.sev.MEDIUM{color:var(--amber)}.sev.LOW{color:var(--cyan)}.empty{padding:24px;text-align:center;color:var(--muted)}.bottom{color:#70839d;text-align:center;font-size:11px;padding:26px 0 6px}.refresh{color:var(--muted);font-size:11px}.link{color:var(--cyan);text-decoration:none}.link:hover{text-decoration:underline}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}.two,.three{grid-template-columns:1fr}}@media(max-width:560px){.wrap{padding:14px}.top{align-items:flex-start}.topright{flex-direction:column;align-items:flex-end}.grid{gap:9px}.card{padding:13px}.metric{font-size:25px}}
+
+/* Theme system */
+:root{color-scheme:dark}
+body[data-theme="light"]{--bg:#f3f6fb;--panel:#ffffff;--panel2:#eef3fa;--line:#d7e0ec;--muted:#607086;--text:#172338;background:radial-gradient(ellipse at 10% 0%,#e1edff 0,transparent 40%),var(--bg)}
+body[data-theme="light"] .card{background:linear-gradient(145deg,#fff,#f8faff);box-shadow:0 8px 24px #25385812}
+body[data-theme="light"] button,body[data-theme="light"] select{background:#fff;color:var(--text)}
+body[data-theme="light"] td{border-bottom-color:#e7edf5}
+body[data-theme="light"] .status{background:#e9eff7;color:#42536b}
+body[data-theme="light"] .status.ok{background:#ddf7eb;color:#087a50}
+body[data-theme="light"] .status.bad{background:#ffe5e9;color:#b4233d}
+body[data-theme="light"] .status.warn{background:#fff2d8;color:#8a5a00}
+.theme-select{min-width:118px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.logbox{background:#080e18;color:#c4f3d9;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:180px;max-height:440px;overflow:auto;white-space:pre-wrap;word-break:break-word;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}
+body[data-theme="light"] .logbox{background:#172338;color:#d6fbe7}
+.smallbtn{padding:6px 9px;font-size:11px}
+.toolbar input{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 11px;border-radius:9px;min-width:190px}
+@media(max-width:650px){.toolbar input{min-width:100%}}
+
+:root {
+ --glass:rgba(17,29,49,.68);
+ --glass-border:rgba(151,190,230,.17);
+ --glass-blur:blur(18px);
+ --accent:#69dff2;
+}
+body {
+ background:
+ radial-gradient(ellipse at 15% 5%,#183d63 0,transparent 42%),
+ radial-gradient(ellipse at 90% 90%,#29265a 0,transparent 38%),
+ #070d19;
+}
+.wrap {max-width:none;margin-left:248px;padding:28px 32px}
+.glass-sidebar {
+ position:fixed;inset:0 auto 0 0;width:224px;padding:25px 15px;
+ background:rgba(8,17,32,.78);backdrop-filter:blur(24px);
+ border-right:1px solid var(--glass-border);z-index:20;
+ display:flex;flex-direction:column;gap:9px;
+}
+.side-brand {font-size:18px;font-weight:800;padding:8px 10px 25px}
+.side-label {font-size:10px;letter-spacing:1.5px;color:#7187a5;padding:15px 12px 5px}
+.side-link {
+ display:flex;align-items:center;gap:12px;padding:12px 13px;
+ border:1px solid transparent;border-radius:12px;color:#a9bad0;
+ text-decoration:none;font-size:13px;cursor:pointer;background:transparent;
+}
+.side-link:hover,.side-link.active {
+ color:#eafaff;background:rgba(89,190,224,.12);
+ border-color:rgba(105,223,242,.22);
+}
+.side-link .ico {width:20px;text-align:center;color:var(--accent)}
+.card {
+ background:linear-gradient(135deg,rgba(25,44,69,.75),rgba(13,25,43,.67));
+ border:1px solid var(--glass-border);backdrop-filter:var(--glass-blur);
+ box-shadow:0 14px 40px rgba(0,0,0,.18);
+}
+.metric-tile {cursor:pointer;transition:transform .2s,border-color .2s}
+.metric-tile:hover {transform:translateY(-3px);border-color:rgba(105,223,242,.55)}
+.severity-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.severity-card {cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.severity-card:hover,.severity-card.selected {transform:translateY(-2px);border-color:var(--accent)}
+.severity-card strong {font-size:29px;display:block;margin:10px 0 3px}
+.severity-card small {color:var(--muted)}
+.severity-card.CRITICAL {border-left:3px solid #ff526d}
+.severity-card.HIGH {border-left:3px solid #ff8a67}
+.severity-card.MEDIUM {border-left:3px solid #ffc36a}
+.severity-card.LOW {border-left:3px solid #5ed6e8}
+.incident-row {cursor:pointer}
+.incident-row:hover {background:rgba(91,183,220,.09)}
+.drawer-backdrop {
+ display:none;position:fixed;inset:0;background:rgba(1,6,15,.65);
+ backdrop-filter:blur(5px);z-index:40
+}
+.drawer {
+ position:fixed;right:0;top:0;height:100dvh;width:min(680px,94vw);
+ overflow:auto;padding:27px;background:rgba(11,22,39,.96);
+ border-left:1px solid var(--glass-border);backdrop-filter:blur(25px);
+ box-shadow:-20px 0 70px #0007;
+}
+.drawer-backdrop.open {display:block}
+.drawer-head {display:flex;justify-content:space-between;align-items:center;gap:12px}
+.drawer h2 {font-size:20px}
+.rca-block {padding:16px;margin:13px 0;border:1px solid var(--glass-border);
+ border-radius:13px;background:rgba(35,55,80,.28)}
+.rca-block h3 {font-size:12px;color:var(--accent);letter-spacing:.8px;margin:0 0 10px}
+.rca-block p,.rca-block li {font-size:13px;line-height:1.65;color:#c4d3e6}
+.drawer-close {font-size:20px;padding:5px 12px}
+@media(max-width:950px) {
+ .wrap {margin-left:0;padding:18px}
+ .glass-sidebar {width:68px;padding:18px 8px}
+ .side-brand {font-size:0;padding:8px 4px 20px}
+ .side-brand:after {content:"✦";font-size:23px}
+ .side-link {justify-content:center;padding:13px 4px;font-size:0}
+ .side-link .ico {font-size:17px}
+ .side-label {font-size:0;padding:5px}
+}
+@media(max-width:560px) {
+ .wrap {padding:12px;margin-left:0}
+ .glass-sidebar {width:54px}
+ .severity-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .top {margin-left:48px}
+}
+
+
+/* Independent dashboard pages */
+.page-view[hidden]{display:none!important}
+.page-view{animation:pageIn .22s ease both;min-height:calc(100vh - 170px)}
+@keyframes pageIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
+.page-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:4px 0 24px;padding:22px 24px;border:1px solid var(--glass-border);border-radius:18px;background:linear-gradient(120deg,rgba(31,62,91,.62),rgba(17,29,49,.4));backdrop-filter:var(--glass-blur)}
+.page-heading h2{font-size:25px;letter-spacing:-.6px;margin:5px 0 6px}.page-heading p{color:var(--muted);margin:0;font-size:12px}.eyebrow{font-size:10px;letter-spacing:1.8px;color:var(--accent);font-weight:750}.page-chip{font-size:10px;letter-spacing:1px;color:var(--accent);border:1px solid var(--glass-border);border-radius:20px;padding:8px 11px;white-space:nowrap}
+.page-view .section:first-of-type{margin-top:22px}.rca-summary-grid{margin-bottom:20px}
+#page-incidents .severity-grid{margin:18px 0 24px}#page-incidents .section{margin-top:28px}
+#page-overview .grid{margin-bottom:22px}#page-overview .two,#page-overview .three{margin-bottom:20px}
+#page-nodes .tablewrap,#page-workloads .tablewrap,#page-pods .tablewrap,#page-logs .card,#page-rca .tablewrap{margin-bottom:20px}
+@media(max-width:950px){.page-heading{padding:17px}.page-heading h2{font-size:21px}}
+@media(max-width:560px){.page-heading{align-items:flex-start;flex-direction:column;margin-left:48px}.page-chip{display:none}.rca-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* ClusterPulse premium glass dashboards: distinct page compositions */
+:root{--glass-bg:rgba(8,20,36,.64);--glass-line:rgba(112,202,230,.20);--glass-glow:0 18px 55px rgba(0,0,0,.25)}
+body{background:radial-gradient(ellipse at 12% 8%,rgba(15,104,130,.22),transparent 38%),radial-gradient(ellipse at 88% 78%,rgba(57,48,132,.20),transparent 36%),#050b15}
+.page-view .card,.glass-panel{background:linear-gradient(145deg,rgba(16,39,61,.78),rgba(7,19,34,.72));border:1px solid var(--glass-line);border-radius:17px;backdrop-filter:blur(22px);box-shadow:var(--glass-glow)}
+.page-view .page-heading{background:linear-gradient(110deg,rgba(9,76,91,.38),rgba(15,28,52,.62));border-color:var(--glass-line);box-shadow:0 14px 45px rgba(0,0,0,.18)}
+.page-view h3{font-size:15px;margin:6px 0 0;color:#e8f6ff}.visual-kicker{font-size:9px;letter-spacing:1.7px;color:#70dff0;font-weight:800}.visual-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.live-pill{font-size:8px;letter-spacing:1px;color:#71e4bf;border:1px solid rgba(81,214,162,.28);border-radius:30px;padding:6px 9px}.visual-note{font-size:10px;color:#849ab4;line-height:1.5;margin:12px 0 0}.ops-hero{display:grid;grid-template-columns:1fr 2fr 1fr;gap:14px;margin:16px 0}.ops-health,.ops-chart,.ops-side{padding:18px;min-height:220px}.gauge{width:150px;height:150px;border-radius:50%;margin:10px auto;background:conic-gradient(#56dfb0 0 72%,#20364b 72% 100%);display:grid;place-items:center;position:relative}.gauge:before{content:"";position:absolute;inset:9px;border-radius:50%;background:#0a1728}.gauge-inner{z-index:1;text-align:center;display:flex;flex-direction:column}.gauge-inner strong{font-size:29px;color:#75e9ca}.gauge-inner span{font-size:8px;letter-spacing:1px;color:#90a8c0}.health-foot{font-size:10px;color:#8ea4bc;text-align:center}.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#51d6a2;box-shadow:0 0 10px #51d6a2;margin-right:6px}.resource-pair{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:20px}.resource-pair span,.fleet-row span{font-size:10px;color:#91a7bf}.resource-pair strong{display:block;font-size:25px;margin:4px 0 8px;color:#65ddec}.meter{height:6px;background:#1c334a;border-radius:10px;overflow:hidden}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#42d8c6,#54d8ed);border-radius:10px}.blue-meter i{background:linear-gradient(90deg,#4b9fff,#8c8aff)}.sparkline{width:100%;height:62px;margin-top:12px;overflow:visible}.sparkline path:first-child{fill:none;stroke:#54dce7;stroke-width:2}.sparkline-fill{fill:rgba(53,198,210,.10);stroke:none}.chart-foot{display:flex;justify-content:space-between;font-size:8px;color:#7790aa;letter-spacing:.6px}.fleet-number{font-size:42px;font-weight:800;color:#65dfd6;margin-top:18px}.ops-side>span{font-size:10px;color:#8299b3}.fleet-divider{height:1px;background:var(--glass-line);margin:14px 0}.fleet-row{display:flex;justify-content:space-between;padding:5px 0}.fleet-row b{font-size:12px}.danger-text{color:#ff7185}.warn-text{color:#ffc36a}.deploy-value{font-size:23px;color:#72e4bd;margin-top:7px}.overview-lower{display:grid;grid-template-columns:1.7fr 1fr;gap:14px}.topology-panel,.health-list{padding:18px}.topology-art{height:190px;position:relative;display:flex;align-items:center;justify-content:center}.topology-art svg{position:absolute;inset:0;width:100%;height:100%}.topology-art svg path{fill:none;stroke:#3dbbdb;stroke-width:1.2;stroke-dasharray:5 5;opacity:.7}.topo-core,.topo-node{z-index:1;position:absolute;border:1px solid #4bd4e4;background:rgba(16,79,103,.62);box-shadow:0 0 24px rgba(45,202,224,.18);border-radius:12px;padding:12px 15px;text-align:center;font-size:10px}.topo-core{left:42%;top:36%;color:#80f2ec}.topo-core small{font-size:7px}.n1{left:12%;top:8%}.n2{right:12%;top:8%}.n3{left:43%;bottom:2%;border-color:#4cbb9b}.signal-row{display:flex;align-items:center;gap:9px;padding:13px 0;border-bottom:1px solid rgba(112,202,230,.10);font-size:11px;color:#a9bdd2}.signal-row b{margin-left:auto;color:#e8f5ff;font-size:10px}.signal{width:7px;height:7px;border-radius:50%}.green-signal{background:#51d6a2;box-shadow:0 0 9px #51d6a2}.cyan-signal{background:#5ed6e8}.amber-signal{background:#ffc36a}.incident-command{display:grid;grid-template-columns:1fr 2fr 1fr;gap:14px;margin:16px 0}.incident-score,.incident-visual,.incident-flow{padding:18px}.incident-ring{width:130px;height:130px;border-radius:50%;border:9px solid #244056;border-top-color:#ff6d83;border-right-color:#ffc36a;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:12px auto}.incident-ring strong{font-size:30px}.incident-ring span{font-size:8px;letter-spacing:1px;color:#8ea4bc}.incident-score-foot{text-align:center;font-size:9px;color:#829ab3;margin-bottom:12px}.incident-mini{display:flex;justify-content:space-between;padding:6px 2px;font-size:9px;color:#8da5bd}.incident-mini b{color:#ff8a9b}.severity-bars{display:grid;gap:16px;margin:22px 0}.severity-bars>div{display:grid;grid-template-columns:65px 1fr 22px;align-items:center;gap:9px;font-size:9px;color:#93a9c0}.severity-bars i{height:8px;border-radius:10px;background:#1b3148;overflow:hidden}.severity-bars i b{display:block;height:100%;width:0;background:linear-gradient(90deg,#f56d83,#ffb26b);border-radius:10px}.severity-bars>div:nth-child(3) i b{background:linear-gradient(90deg,#f4ba60,#ffe08b)}.severity-bars>div:nth-child(4) i b{background:linear-gradient(90deg,#43bcd4,#7be7ef)}.severity-bars strong{color:#e9f7ff}.flow-step{display:grid;grid-template-columns:25px 1fr;gap:5px;padding:11px 0;border-bottom:1px solid rgba(112,202,230,.12);font-size:10px;color:#c4d5e6}.flow-step i{grid-row:span 2;color:#66dce8;font-style:normal}.flow-step b{font-size:8px;color:#829ab2;font-weight:500}.fleet-hero,.workload-hero,.pod-hero,.logs-hero{padding:22px;margin:16px 0;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:145px}.fleet-hero p,.workload-hero p,.pod-hero p,.logs-hero p,.rca-focus p{font-size:11px;color:#8fa6bf}.fleet-big{display:flex;flex-direction:column;text-align:center}.fleet-big strong{font-size:42px;color:#67e0d0}.fleet-big span{font-size:8px;letter-spacing:1px;color:#8299b1}.fleet-status{font-size:10px;color:#9ab0c7}.node-visual-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}.node-map,.node-condition{padding:20px}.node-orbit{height:220px;position:relative;display:grid;place-items:center}.orbit-ring{width:180px;height:180px;border:1px dashed #3c9db9;border-radius:50%;box-shadow:0 0 35px rgba(45,202,224,.08)}.orbit-core,.work-orbit-core{position:absolute;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;background:rgba(37,151,170,.25);border:1px solid #4bd6dc;color:#9df5ec;font-weight:800}.orbit-chip{position:absolute;border:1px solid #4d9db5;border-radius:10px;padding:9px 12px;background:rgba(12,43,62,.9);font-size:9px;color:#bdeaf0}.orbit-a{top:8px;left:calc(50% - 36px)}.orbit-b{bottom:8px;left:calc(50% - 36px)}.orbit-c{right:calc(50% - 125px);top:calc(50% - 15px)}.condition-line{display:flex;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--glass-line);font-size:10px;color:#a7bad0}.condition-line b{color:#74ddc3}.workload-hero{min-height:190px}.workload-orbit{width:260px;height:150px;position:relative;display:grid;place-items:center}.work-orbit-core{width:65px;height:65px}.work-pill.wp4{left:50%;top:50%;transform:translate(-50%,105px)}.work-pill{position:absolute;font-size:8px;border:1px solid var(--glass-line);padding:7px 9px;border-radius:18px;color:#a8eaf0;background:rgba(22,66,86,.45)}.wp1{top:0;left:0}.wp2{right:0;top:15px}.wp3{bottom:0;left:30%}.workload-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}.workload-kpis .glass-panel{padding:18px}.workload-kpis span,.workload-kpis small{display:block;font-size:9px;color:#8fa5bd}.workload-kpis b{display:block;font-size:30px;color:#6de0d5;margin:8px 0}.pod-status-rings{display:flex;gap:12px}.pod-ring{width:85px;height:85px;border-radius:50%;border:5px solid #43c9a4;display:flex;flex-direction:column;align-items:center;justify-content:center}.pod-ring b{font-size:20px}.pod-ring span{font-size:7px;color:#8fa7be}.ring-warn{border-color:#ffc36a}.ring-bad{border-color:#ff7185}.pod-activity{padding:18px;margin:14px 0}.pod-state-track{height:13px;display:flex;border-radius:20px;overflow:hidden;background:#1b3046;margin:20px 0 10px}.pod-state-track i{display:block;width:0}.state-running{background:#51d6a2}.state-pending{background:#ffc36a}.state-failed{background:#ff7185}.pod-state-legend{display:flex;gap:18px;font-size:9px;color:#a0b4c9}.logs-hero{display:block}.log-feature-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}.log-feature-row>div{padding:13px;border:1px solid var(--glass-line);border-radius:12px;background:rgba(20,49,72,.38)}.log-feature-row b,.log-feature-row span{display:block}.log-feature-row b{font-size:9px;color:#6ce0db}.log-feature-row span{font-size:9px;color:#91a8c0;margin-top:5px}.rca-workspace{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin:16px 0}.rca-focus,.rca-side{padding:20px}.rca-flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:25px}.rca-flow span{border:1px solid var(--glass-line);border-radius:9px;padding:9px 12px;color:#9de8ec;font-size:8px;letter-spacing:.7px;background:rgba(20,62,80,.4)}.rca-flow i{color:#4bd2d9;font-style:normal}.rca-coverage{width:115px;height:115px;border-radius:50%;border:7px solid #4bd3c2;border-right-color:#243e55;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:14px auto}.rca-coverage strong{font-size:27px;color:#70e7d5}.rca-coverage span{font-size:7px;color:#91a9c1;letter-spacing:1px}
+@media(max-width:1100px){.ops-hero,.incident-command{grid-template-columns:1fr 1fr}.ops-chart,.incident-visual{grid-column:span 2}.overview-lower{grid-template-columns:1fr}.node-visual-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.ops-hero,.incident-command{grid-template-columns:1fr}.ops-chart,.incident-visual{grid-column:auto}.fleet-hero,.workload-hero,.pod-hero{align-items:flex-start;flex-direction:column}.workload-kpis{grid-template-columns:1fr}.pod-status-rings{width:100%;justify-content:space-between}.log-feature-row{grid-template-columns:1fr}.rca-workspace{grid-template-columns:1fr}.incident-command .incident-score{min-height:220px}}
+
+
+.live-node-grid{display:flex!important;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px;padding:24px;min-height:220px}
+.live-node-grid .orbit-ring,.live-node-grid .orbit-core{display:none}
+.live-node-chip{position:relative!important;inset:auto!important;display:flex;flex-direction:column;gap:5px;min-width:115px;padding:14px 18px;border:1px solid #4d9db5;border-radius:12px;background:rgba(12,43,62,.9);text-align:center;color:#bdeaf0;box-shadow:0 0 20px rgba(45,202,224,.12)}
+.live-node-chip small{font-size:8px;letter-spacing:1px;color:#74ddc3}
+.live-node-chip.node-bad{border-color:#ff7185}
+.live-node-chip.node-bad small{color:#ff7185}
+.condition-good{color:#74ddc3!important}
+
+
+/* Controller operations: aligned live inventory */
+.workload-hero {
+  min-height: 190px;
+  overflow: hidden;
+}
+.workload-orbit {
+  width: 420px;
+  min-width: 420px;
+  height: 130px;
+  display: grid;
+  grid-template-columns: 1fr 70px 1fr;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 10px;
+}
+.work-orbit-core {
+  position: static;
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+.work-pill {
+  position: static;
+  transform: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  white-space: nowrap;
+  min-width: 145px;
+  padding: 10px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #b9d3e7;
+  border-color: rgba(85, 190, 220, .35);
+  background: rgba(17, 54, 75, .72);
+}
+.work-pill.wp1 { grid-column: 1; grid-row: 1; }
+.work-pill.wp2 { grid-column: 3; grid-row: 1; }
+.work-pill.wp3 { grid-column: 1; grid-row: 2; }
+.work-pill.wp4 { grid-column: 3; grid-row: 2; }
+.work-pill b {
+  color: #5ff0df;
+  font-size: 17px;
+  font-weight: 900;
+  text-shadow: 0 0 12px rgba(65, 230, 220, .35);
+}
+@media (max-width: 900px) {
+  .workload-hero { flex-wrap: wrap; }
+  .workload-orbit { width: 100%; min-width: 0; }
+}
+
+
+/* Standalone log explorer selectors */
+#page-logs .toolbar select {
+ min-width: 145px;
+ max-width: 240px;
+}
+#page-logs #lognamespace { min-width: 175px; }
+#page-logs #logpod { min-width: 250px; }
+#page-logs .logbox {
+ min-height: 330px;
+ max-height: 560px;
+ overflow: auto;
+ white-space: pre-wrap;
+ overflow-wrap: anywhere;
+}
+\n
+.drawer-actions{display:flex;justify-content:flex-end;margin:12px 0 18px}.danger-btn{border-color:#8b3d4b!important;color:#ff9aaa!important;background:#351923!important}
+
+.drawer-status-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;width:100%;margin:0 0 18px}
+.drawer-action-spacer{flex:1 1 auto;min-width:12px}
+.drawer-close-action{margin-left:auto;white-space:nowrap;min-height:36px;padding:8px 14px!important;font-size:12px!important;line-height:1.2;border-radius:10px!important;display:inline-flex;align-items:center;justify-content:center}
+.drawer-closed-note{margin-left:auto;white-space:nowrap;padding:7px 10px;border-radius:9px;background:rgba(86,223,176,.10);color:#56dfb0}
+@media(max-width:560px){.drawer-action-spacer{display:none}.drawer-close-action,.drawer-closed-note{margin-left:0}}
+
+
+.closure-form{border:1px solid rgba(255,113,133,.35);background:rgba(24,34,54,.88);border-radius:12px;padding:16px;margin:0 0 18px}
+.closure-form[hidden]{display:none}
+.closure-form label{display:block;font-weight:650;margin-bottom:8px;color:#dce8f8}
+.closure-form textarea{display:block;width:100%;box-sizing:border-box;resize:vertical;min-height:96px;padding:12px;border:1px solid #34465f;border-radius:9px;background:#0b1627;color:#e6eefb;font:inherit;line-height:1.45}
+.closure-form textarea:focus{outline:2px solid rgba(91,211,232,.55);outline-offset:1px}
+.closure-form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;flex-wrap:wrap}
+
+.log-explorer-card{padding:14px}
+.log-toolbar,.log-filterbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.log-toolbar{padding-bottom:11px;border-bottom:1px solid var(--line)}
+.log-toolbar select,.log-filterbar select,.log-search{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 11px;border-radius:9px;min-height:38px}
+.log-toolbar select{max-width:220px}
+.log-check{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;white-space:nowrap}
+.log-action,.log-icon-btn,.log-level{border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);padding:8px 11px;font-weight:700;cursor:pointer}
+.log-action.live-stop{background:#00a84f;border-color:#00a84f;color:#fff}
+.log-action.live-start{background:#183b2b;border-color:#238b59;color:#8ff0b8}
+.log-icon-btn{font-size:18px;min-width:38px;padding:5px}
+.log-filterbar{padding:11px 0}
+.log-levels{display:flex;gap:6px;flex-wrap:wrap}
+.log-level{font-size:11px;padding:7px 10px;opacity:.48}
+.log-level.active{opacity:1}
+.log-level.err{color:#ff6675;border-color:#853344}.log-level.warn{color:#ffbd4a;border-color:#8a6226}
+.log-level.info{color:#58a5ff;border-color:#285c9c}.log-level.dbg{color:#aab8cc}
+.log-level.other{color:#d7e1ef}
+.log-search{flex:1;min-width:160px}
+.log-status{display:flex;gap:16px;align-items:center;color:var(--muted);font:11px ui-monospace,monospace;padding:2px 0 9px}
+#logLiveStatus{color:#55d99b;font-weight:800}
+.logbox{min-height:280px;max-height:620px;overflow:auto;white-space:pre;word-break:normal}
+.logbox.compact{line-height:1.2;font-size:11px;padding:8px}
+.log-line{display:block;min-height:1.55em}.log-line.level-ERR{color:#ff7785}.log-line.level-WARN{color:#ffc36a}
+.log-line.level-INFO{color:#91c5ff}.log-line.level-DBG{color:#aab8cc}
+@media(max-width:760px){.log-toolbar select{flex:1;min-width:135px}.log-search{order:3;flex-basis:100%}.log-filterbar{align-items:flex-start}}
+
+.management-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0}.topology-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.topology-ns-card{padding:17px;border:1px solid var(--glass-line);border-radius:15px;background:linear-gradient(145deg,rgba(20,54,86,.8),rgba(10,23,40,.8))}.topology-ns-card h3{color:#83bcff!important;font-size:16px!important;margin:0 0 12px!important}.topology-counts{display:flex;flex-wrap:wrap;gap:7px}.topology-counts span{font-size:10px;padding:6px 8px;border-radius:8px;background:rgba(80,120,170,.15);color:#bfd1e5}
+.topology-summary-button{width:100%;text-align:left;cursor:pointer;color:inherit;font:inherit}.topology-summary-button:hover{border-color:#4bd4e4;transform:translateY(-1px)}.topology-ns-card{position:relative;transition:border-color .18s,transform .18s}.topology-ns-card:hover{border-color:rgba(71,211,235,.65);transform:translateY(-1px)}
+.topology-ns-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.topology-expand{border:1px solid var(--glass-line);background:rgba(72,130,190,.18);color:#cce8ff;border-radius:8px;padding:6px 10px;cursor:pointer}.topology-counts button{font:inherit;font-size:10px;padding:7px 9px;border-radius:8px;border:1px solid rgba(105,170,220,.18);background:rgba(80,120,170,.15);color:#bfd1e5;cursor:pointer}.topology-counts button:hover,.topology-counts button.active{background:rgba(42,175,205,.25);border-color:#4bd4e4;color:#e9fcff;box-shadow:0 0 14px rgba(57,204,224,.12)}
+.topology-resource-list{display:none;margin-top:13px;padding-top:12px;border-top:1px solid var(--glass-line)}.topology-ns-card.expanded .topology-resource-list{display:block}.topology-resource-list h4{font-size:11px;color:#75dfea;margin:0 0 9px}.topology-resource-list .topology-resource-item{display:flex;justify-content:space-between;gap:12px;padding:8px 9px;margin:5px 0;border:1px solid rgba(110,170,210,.12);border-radius:8px;background:rgba(4,16,29,.35);font-size:10px;color:#c4d7e9;cursor:pointer;text-align:left;width:100%}.topology-resource-item:hover{border-color:#4bd4e4;background:rgba(25,95,120,.28)}.topology-resource-item small{color:#8da8c1}.topology-empty{font-size:10px;color:#8da8c1;padding:7px}.topology-graph{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:center;padding:15px;margin:14px 0;border:1px solid var(--glass-line);border-radius:13px;background:rgba(7,22,38,.45)}.topology-graph-node{padding:11px;border:1px solid rgba(79,190,220,.35);border-radius:9px;background:rgba(21,66,91,.45);font-size:10px;color:#d3edff;text-align:center;overflow-wrap:anywhere}.topology-graph-node small{display:block;color:#8da8c1;margin-top:5px}.topology-graph-arrow{text-align:center;color:#60dbe7;font-size:18px}.topology-graph-empty{grid-column:1/-1;color:#91a8bf;font-size:11px}
+.timeline-list{display:grid;gap:9px}.timeline-event{display:grid;grid-template-columns:155px 72px minmax(120px,1fr);gap:12px;padding:13px 15px;border:1px solid var(--glass-line);border-radius:12px;background:rgba(14,34,54,.68)}.timeline-event p{grid-column:3;margin:0;color:#9fb3c9;font-size:11px;overflow-wrap:anywhere}.timeline-event time{font-size:10px;color:#8fa6bf}.notice{padding:14px 16px;margin:14px 0;border:1px solid var(--glass-line);border-radius:12px;background:rgba(22,49,73,.55);color:#a9bfd4;font-size:12px;line-height:1.6}.cost-card{padding:22px;margin:16px 0}.cost-card .metric{font-size:30px;margin:14px 0}.status-pass{color:#63dfb3}.status-warn{color:#ffc36a}.status-fail{color:#ff7888}.page-view select{max-width:240px;margin-right:8px}@media(max-width:760px){.timeline-event{grid-template-columns:1fr;gap:5px}.timeline-event p{grid-column:1}.management-grid{grid-template-columns:1fr}}
+
+</style>
+<style id="cp-neo">
+/* ===== ClusterPulse NEO visual layer (presentation only) ===== */
+:root{--neo-cyan:#38e8ff;--neo-green:#3dffb5;--neo-violet:#8b7bff;--neo-pink:#ff5fa2;--neo-amber:#ffc15a;--neo-red:#ff4d6d}
+body{background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background:
+ radial-gradient(600px 400px at 8% 6%,rgba(56,232,255,.16),transparent 70%),
+ radial-gradient(700px 500px at 95% 85%,rgba(139,123,255,.18),transparent 70%),
+ radial-gradient(500px 360px at 60% 40%,rgba(61,255,181,.06),transparent 70%),
+ linear-gradient(rgba(120,200,255,.035) 1px,transparent 1px) 0 0/44px 44px,
+ linear-gradient(90deg,rgba(120,200,255,.035) 1px,transparent 1px) 0 0/44px 44px;
+ animation:neoDrift 24s ease-in-out infinite alternate}
+@keyframes neoDrift{to{transform:translate3d(-14px,10px,0) scale(1.03)}}
+
+/* sidebar */
+.glass-sidebar{background:linear-gradient(180deg,rgba(6,16,32,.88),rgba(10,14,40,.82));box-shadow:8px 0 40px rgba(0,0,0,.35)}
+.glass-sidebar:after{content:"";position:absolute;top:0;right:-1px;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--neo-cyan),var(--neo-violet),transparent);opacity:.55}
+.side-brand{background:linear-gradient(90deg,#fff,var(--neo-cyan) 60%,var(--neo-violet));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.side-brand .cyan{color:transparent}
+.side-link{transition:all .25s;position:relative}
+.side-link:hover{transform:translateX(3px)}
+.side-link.active{background:linear-gradient(90deg,rgba(56,232,255,.22),rgba(139,123,255,.10));box-shadow:0 0 22px rgba(56,232,255,.16),inset 3px 0 0 var(--neo-cyan)}
+.side-link.active .ico{text-shadow:0 0 12px var(--neo-cyan)}
+.side-link .ico{transition:transform .25s}.side-link:hover .ico{transform:scale(1.25) rotate(-6deg)}
+
+/* header */
+.logo{background:linear-gradient(135deg,var(--neo-cyan),var(--neo-violet));box-shadow:0 0 0 1px rgba(255,255,255,.15) inset,0 8px 34px rgba(56,232,255,.4);animation:logoPulse 3.5s ease-in-out infinite}
+@keyframes logoPulse{50%{box-shadow:0 0 0 1px rgba(255,255,255,.2) inset,0 8px 46px rgba(139,123,255,.6)}}
+.brand h1{background:linear-gradient(90deg,#fff,#b8f4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pill{box-shadow:0 0 20px rgba(61,255,181,.15);backdrop-filter:blur(10px)}
+.dot,.live-dot,.signal.green-signal{animation:neoPulse 1.8s infinite}
+@keyframes neoPulse{0%{box-shadow:0 0 0 0 rgba(61,255,181,.7)}70%{box-shadow:0 0 0 9px rgba(61,255,181,0)}100%{box-shadow:0 0 0 0 rgba(61,255,181,0)}}
+button{transition:all .2s}
+button:hover{box-shadow:0 0 18px rgba(56,232,255,.3);transform:translateY(-1px)}
+.top .toolbar button:first-of-type,.toolbar>button:not(.smallbtn){background:linear-gradient(135deg,rgba(56,232,255,.25),rgba(139,123,255,.25));border-color:rgba(56,232,255,.4)}
+
+/* page heading */
+.page-heading{position:relative;overflow:hidden;border:1px solid transparent!important;
+ background:linear-gradient(110deg,rgba(9,76,91,.55),rgba(26,24,70,.7)) padding-box,linear-gradient(110deg,rgba(56,232,255,.7),rgba(139,123,255,.5),rgba(255,95,162,.5)) border-box!important}
+.page-heading:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.07) 50%,transparent 65%);transform:translateX(-100%);animation:sheen 6s ease-in-out infinite}
+@keyframes sheen{60%,100%{transform:translateX(100%)}}
+.page-heading h2{font-size:28px;background:linear-gradient(90deg,#fff 20%,var(--neo-cyan) 70%,var(--neo-violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.page-chip{background:rgba(56,232,255,.08);box-shadow:0 0 16px rgba(56,232,255,.2);position:relative;padding-left:22px}
+.page-chip:before{content:"";position:absolute;left:9px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--neo-green);animation:neoPulse 1.8s infinite}
+.eyebrow{background:linear-gradient(90deg,var(--neo-cyan),var(--neo-violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* cards */
+.card,.glass-panel{position:relative;transition:transform .25s,box-shadow .25s,border-color .25s}
+.page-view .card:before,.page-view .glass-panel:before{content:"";position:absolute;left:14px;right:14px;top:0;height:2px;border-radius:0 0 4px 4px;
+ background:linear-gradient(90deg,transparent,var(--neo-cyan),var(--neo-violet),transparent);opacity:.7}
+.page-view .glass-panel:hover,.page-view .card:hover{box-shadow:0 18px 50px rgba(0,0,0,.35),0 0 30px rgba(56,232,255,.12);border-color:rgba(56,232,255,.4)}
+.metric-tile:hover{box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 34px rgba(56,232,255,.25)}
+.metric{font-size:36px;text-shadow:0 0 26px currentColor}
+.metric.green{color:var(--neo-green)}.metric.red{color:var(--neo-red)}.metric.amber{color:var(--neo-amber)}.metric.cyan{color:var(--neo-cyan)}.metric.blue{color:#86a8ff}
+.metric-head{letter-spacing:1.2px;font-weight:600}
+.metric-head .cyan,.metric-head .green,.metric-head .red,.metric-head .amber,.metric-head .blue{filter:drop-shadow(0 0 6px currentColor)}
+.section h2{position:relative;padding-left:12px}
+.section h2:before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:3px;border-radius:3px;background:linear-gradient(var(--neo-cyan),var(--neo-violet))}
+
+/* overview */
+.gauge{box-shadow:0 0 45px rgba(61,255,181,.22),0 0 0 1px rgba(61,255,181,.2);animation:gaugeGlow 4s ease-in-out infinite;transition:background .6s}
+@keyframes gaugeGlow{50%{box-shadow:0 0 70px rgba(61,255,181,.38),0 0 0 1px rgba(61,255,181,.35)}}
+.gauge-inner strong{font-size:34px;text-shadow:0 0 20px rgba(61,255,181,.7)}
+.meter{height:9px;background:#13283d;box-shadow:inset 0 1px 3px #0008}
+.meter i{transition:width 1s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 14px rgba(56,232,255,.7);background:linear-gradient(90deg,var(--neo-green),var(--neo-cyan))}
+.blue-meter i{background:linear-gradient(90deg,#4b9fff,var(--neo-violet));box-shadow:0 0 14px rgba(139,123,255,.7)}
+.resource-pair strong{font-size:30px;text-shadow:0 0 18px rgba(56,232,255,.5)}
+.sparkline path:first-child{stroke:var(--neo-cyan);stroke-width:2.5;filter:drop-shadow(0 0 6px var(--neo-cyan));stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2.8s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sparkline-fill{fill:rgba(56,232,255,.14)}
+.fleet-number{font-size:52px;background:linear-gradient(135deg,var(--neo-green),var(--neo-cyan));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(56,232,255,.4))}
+.deploy-value{font-size:28px;text-shadow:0 0 18px rgba(61,255,181,.5)}
+.topology-art svg path{stroke:var(--neo-cyan);stroke-dasharray:6 6;animation:flow 1.4s linear infinite;filter:drop-shadow(0 0 4px var(--neo-cyan))}
+@keyframes flow{to{stroke-dashoffset:-24}}
+.topo-core{background:radial-gradient(circle,rgba(56,232,255,.35),rgba(16,79,103,.7));animation:coreBeat 2.6s ease-in-out infinite}
+@keyframes coreBeat{50%{box-shadow:0 0 44px rgba(56,232,255,.55);transform:scale(1.05)}}
+.topo-node{transition:transform .25s}.topo-node:hover{transform:translateY(-4px) scale(1.06)}
+.n1,.n2{animation:floaty 5s ease-in-out infinite}.n2{animation-delay:-1.6s}.n3{animation:floaty 5s ease-in-out -3s infinite}
+@keyframes floaty{50%{transform:translateY(-6px)}}
+.signal-row{transition:background .2s,padding .2s}.signal-row:hover{background:rgba(56,232,255,.07);padding-left:8px;border-radius:8px}
+
+/* incidents */
+.incident-ring{border-width:10px;animation:ringGlow 3s ease-in-out infinite;box-shadow:0 0 36px rgba(255,109,131,.25),inset 0 0 30px rgba(255,109,131,.1)}
+@keyframes ringGlow{50%{box-shadow:0 0 60px rgba(255,109,131,.45),inset 0 0 36px rgba(255,193,90,.15)}}
+.incident-ring strong{font-size:38px;text-shadow:0 0 18px rgba(255,109,131,.6)}
+.severity-bars i{height:11px;box-shadow:inset 0 1px 3px #0008}
+.severity-bars i b{transition:width 1s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 14px rgba(255,120,120,.6)}
+.flow-step{transition:transform .2s,background .2s;border-radius:8px}.flow-step:hover{transform:translateX(5px);background:rgba(56,232,255,.06)}
+.flow-step i{font-weight:800;text-shadow:0 0 10px var(--neo-cyan)}
+.severity-card{overflow:hidden}
+.severity-card:after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;opacity:.18;filter:blur(8px)}
+.severity-card.CRITICAL:after{background:#ff526d}.severity-card.HIGH:after{background:#ff8a67}.severity-card.MEDIUM:after{background:#ffc36a}.severity-card.LOW:after{background:#5ed6e8}
+.severity-card strong{font-size:38px;text-shadow:0 0 22px currentColor}
+.severity-card.CRITICAL strong{color:#ff6b85}.severity-card.HIGH strong{color:#ff9a78}.severity-card.MEDIUM strong{color:#ffd07a}.severity-card.LOW strong{color:#7fe6f5}
+.severity-card.selected{box-shadow:0 0 0 1px var(--neo-cyan),0 0 34px rgba(56,232,255,.3)}
+.sev.CRITICAL{animation:critBlink 1.6s infinite}
+@keyframes critBlink{50%{text-shadow:0 0 12px #ff4d6d;opacity:.8}}
+
+/* tables */
+.tablewrap{padding:6px 8px!important}
+thead th{position:sticky;top:0;z-index:1;background:rgba(10,24,42,.92);letter-spacing:1.2px;font-size:10px;font-weight:700;color:#7fdcf0;border-bottom:1px solid rgba(56,232,255,.3)}
+tbody tr{transition:background .18s,box-shadow .18s}
+tbody tr:nth-child(even){background:rgba(120,190,255,.025)}
+tbody tr:hover{background:linear-gradient(90deg,rgba(56,232,255,.12),rgba(139,123,255,.06));box-shadow:inset 3px 0 0 var(--neo-cyan)}
+.status{display:inline-flex;align-items:center;gap:6px;font-weight:600;letter-spacing:.3px;border:1px solid transparent}
+.status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.status.ok{border-color:rgba(61,255,181,.3);box-shadow:0 0 14px rgba(61,255,181,.12)}
+.status.bad{border-color:rgba(255,77,109,.35);box-shadow:0 0 14px rgba(255,77,109,.15)}
+.status.warn{border-color:rgba(255,193,90,.3)}
+.sev{padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid currentColor}
+.link{padding:6px 11px;border:1px solid rgba(56,232,255,.3);border-radius:20px;font-size:11px}
+
+/* nodes */
+.fleet-big strong{font-size:54px;background:linear-gradient(135deg,var(--neo-green),var(--neo-cyan));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(56,232,255,.45))}
+.live-node-chip{transition:transform .25s,box-shadow .25s;background:linear-gradient(145deg,rgba(16,80,104,.75),rgba(10,30,56,.9))!important;animation:floaty 5s ease-in-out infinite}
+.live-node-chip:hover{transform:translateY(-6px) scale(1.05)!important;box-shadow:0 0 34px rgba(56,232,255,.4)}
+.live-node-chip.node-ok{border-color:rgba(61,255,181,.6)}
+.live-node-chip.node-bad{box-shadow:0 0 28px rgba(255,77,109,.35)}
+.live-node-chip b{font-size:12px}
+.condition-line{transition:padding .2s,background .2s}.condition-line:hover{background:rgba(56,232,255,.06);padding-left:8px;border-radius:8px}
+
+/* workloads */
+.work-orbit-core{animation:coreBeat 2.8s ease-in-out infinite;box-shadow:0 0 30px rgba(56,232,255,.35)}
+.work-pill{transition:transform .2s,box-shadow .2s}.work-pill:hover{transform:scale(1.06)!important;box-shadow:0 0 22px rgba(56,232,255,.35)}
+.workload-kpis .glass-panel{overflow:hidden}
+.workload-kpis b{font-size:40px;text-shadow:0 0 22px currentColor}
+.workload-kpis .glass-panel:nth-child(2) b{color:var(--neo-green)}
+.workload-kpis .glass-panel:nth-child(3) b{color:var(--neo-amber)}
+.workload-kpis .glass-panel:after{content:"";position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;border-radius:50%;background:currentColor;opacity:.07;filter:blur(10px)}
+
+/* pods */
+.pod-ring{position:relative;background:radial-gradient(circle,rgba(67,201,164,.12),transparent 70%);box-shadow:0 0 30px rgba(67,201,164,.3);transition:transform .25s}
+.pod-ring:hover{transform:scale(1.08)}
+.pod-ring b{font-size:24px;text-shadow:0 0 14px currentColor}
+.pod-ring.ring-warn{box-shadow:0 0 30px rgba(255,195,106,.3);background:radial-gradient(circle,rgba(255,195,106,.1),transparent 70%)}
+.pod-ring.ring-bad{box-shadow:0 0 30px rgba(255,113,133,.35);background:radial-gradient(circle,rgba(255,113,133,.1),transparent 70%)}
+.pod-state-track{height:16px;box-shadow:inset 0 2px 5px #0009}
+.pod-state-track i{transition:width 1s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 14px currentColor}
+.state-running{box-shadow:0 0 14px rgba(81,214,162,.7)!important}.state-pending{box-shadow:0 0 14px rgba(255,195,106,.6)!important}.state-failed{box-shadow:0 0 14px rgba(255,113,133,.7)!important}
+.pod-state-legend span:nth-child(1){color:#51d6a2}.pod-state-legend span:nth-child(2){color:#ffc36a}.pod-state-legend span:nth-child(3){color:#ff7185}
+.toolbar input:focus,.toolbar select:focus{outline:none;border-color:var(--neo-cyan);box-shadow:0 0 0 3px rgba(56,232,255,.18)}
+
+/* logs terminal */
+.log-feature-row>div{transition:transform .2s,border-color .2s}.log-feature-row>div:hover{transform:translateY(-3px);border-color:var(--neo-cyan)}
+.logbox{position:relative;background:linear-gradient(180deg,#040a14,#07111f)!important;color:#7dffc0!important;border-color:rgba(61,255,181,.3)!important;box-shadow:inset 0 0 40px rgba(0,0,0,.6),0 0 28px rgba(61,255,181,.08);text-shadow:0 0 6px rgba(61,255,181,.35);
+ background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px)!important}
+#page-logs .card>.toolbar:before{content:"";}
+.logbox::-webkit-scrollbar,.drawer::-webkit-scrollbar,.tablewrap::-webkit-scrollbar{width:9px;height:9px}
+.logbox::-webkit-scrollbar-thumb,.drawer::-webkit-scrollbar-thumb,.tablewrap::-webkit-scrollbar-thumb{background:linear-gradient(var(--neo-cyan),var(--neo-violet));border-radius:9px}
+.logbox::-webkit-scrollbar-track,.drawer::-webkit-scrollbar-track,.tablewrap::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+
+/* RCA */
+.rca-flow span{transition:all .2s;box-shadow:0 0 14px rgba(56,232,255,.08)}.rca-flow span:hover{background:rgba(56,232,255,.2);transform:translateY(-2px)}
+.rca-flow i{animation:arrowPulse 1.6s infinite}
+@keyframes arrowPulse{50%{transform:translateX(4px);text-shadow:0 0 10px var(--neo-cyan)}}
+.rca-coverage{border-width:9px;border-color:var(--neo-green);border-right-color:#243e55;animation:ringGlow 3.4s ease-in-out infinite;box-shadow:0 0 34px rgba(61,255,181,.25)}
+.rca-coverage strong{font-size:31px;text-shadow:0 0 16px rgba(61,255,181,.6)}
+.rca-summary-grid .card .metric{font-size:40px}
+
+/* drawer */
+.drawer{background:linear-gradient(180deg,rgba(8,18,36,.98),rgba(14,14,40,.98))}
+.drawer:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(var(--neo-cyan),var(--neo-violet),var(--neo-pink))}
+.drawer-backdrop.open .drawer{animation:slideIn .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:none;opacity:1}}
+.rca-block{transition:border-color .2s,transform .2s;border-left:3px solid var(--neo-cyan)}
+.rca-block:hover{border-color:rgba(56,232,255,.5);transform:translateX(3px)}
+.rca-block h3{background:linear-gradient(90deg,var(--neo-cyan),var(--neo-violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* page transition + stagger */
+.page-view>*{animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both}
+.page-view>*:nth-child(2){animation-delay:.05s}.page-view>*:nth-child(3){animation-delay:.1s}.page-view>*:nth-child(4){animation-delay:.15s}.page-view>*:nth-child(5){animation-delay:.2s}.page-view>*:nth-child(n+6){animation-delay:.25s}
+@keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.bottom{letter-spacing:.4px}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.sparkline path:first-child{stroke-dashoffset:0}}
+</style>
+<style id="cp-float">
+/* ===== Floating effect (uses independent `translate`, so it never clashes with hover/entrance transforms) ===== */
+@keyframes floatY{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes floatY2{0%,100%{translate:0 -3px}50%{translate:0 5px}}
+@keyframes floatX{0%,100%{translate:0 0}50%{translate:4px -5px}}
+@keyframes floatShadow{0%,100%{box-shadow:0 14px 36px rgba(0,0,0,.22)}50%{box-shadow:0 26px 52px rgba(0,0,0,.38),0 0 26px rgba(56,232,255,.10)}}
+
+/* Panels & cards (tables and log box stay still so text is easy to read) */
+.page-view .card:not(.tablewrap),
+.page-view .glass-panel{animation:floatY 7s ease-in-out infinite,floatShadow 7s ease-in-out infinite}
+.page-view .card:not(.tablewrap):nth-child(2n),.page-view .glass-panel:nth-child(2n){animation-duration:8.5s,8.5s;animation-delay:-2s,-2s}
+.page-view .card:not(.tablewrap):nth-child(3n),.page-view .glass-panel:nth-child(3n){animation-duration:6.2s,6.2s;animation-delay:-4s,-4s}
+.page-view .card:not(.tablewrap):nth-child(4n),.page-view .glass-panel:nth-child(4n){animation-duration:9.5s,9.5s;animation-delay:-1s,-1s}
+
+/* Direct children keep their entrance animation AND float */
+.page-view>.page-heading,.page-view>.glass-panel,.page-view>.grid>.card,.page-view>.two>.card,.page-view>.three>.card{
+ animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both,floatY 8s ease-in-out .6s infinite,floatShadow 8s ease-in-out .6s infinite}
+.page-view>.page-heading{animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both,floatY2 9s ease-in-out .6s infinite}
+.card:not(.tablewrap).tablewrap,.tablewrap{animation:none!important;translate:none!important}
+#page-logs .card{animation:none!important}
+
+/* Hover pauses the float so cards feel "picked up" */
+.page-view .card:not(.tablewrap):hover,.page-view .glass-panel:hover{animation-play-state:paused,paused}
+
+/* Small elements */
+.logo{animation:logoPulse 3.5s ease-in-out infinite,floatY2 5s ease-in-out infinite}
+.pill,.page-chip{animation:floatY2 5.5s ease-in-out infinite}
+.pod-ring{animation:floatY 5s ease-in-out infinite}.pod-ring:nth-child(2){animation-delay:-1.6s}.pod-ring:nth-child(3){animation-delay:-3.2s}
+.work-pill{animation:floatY2 5s ease-in-out infinite}
+.work-pill.wp2{animation-delay:-1.2s}.work-pill.wp3{animation-delay:-2.4s}.work-pill.wp4{animation-delay:-3.6s}
+.log-feature-row>div{animation:floatY 6s ease-in-out infinite}
+.log-feature-row>div:nth-child(2){animation-delay:-2s}.log-feature-row>div:nth-child(3){animation-delay:-4s}
+.rca-flow span{animation:floatY2 4.8s ease-in-out infinite}
+.rca-flow span:nth-of-type(2){animation-delay:-1.2s}.rca-flow span:nth-of-type(3){animation-delay:-2.4s}.rca-flow span:nth-of-type(4){animation-delay:-3.6s}
+.live-node-chip{animation:floatY 5s ease-in-out infinite!important}
+.live-node-chip:nth-child(2n){animation-delay:-1.5s!important}.live-node-chip:nth-child(3n){animation-delay:-3s!important}
+.gauge,.incident-ring,.rca-coverage{translate:0 0}
+.gauge{animation:gaugeGlow 4s ease-in-out infinite,floatX 8s ease-in-out infinite}
+.incident-ring{animation:ringGlow 3s ease-in-out infinite,floatX 8s ease-in-out infinite}
+.rca-coverage{animation:ringGlow 3.4s ease-in-out infinite,floatX 8s ease-in-out infinite}
+.severity-card{animation:floatY 6.5s ease-in-out infinite}
+.severity-card:nth-child(2){animation-delay:-1.6s}.severity-card:nth-child(3){animation-delay:-3.2s}.severity-card:nth-child(4){animation-delay:-4.8s}
+.topo-core{animation:coreBeat 2.6s ease-in-out infinite,floatY2 6s ease-in-out infinite}
+.fleet-number,.fleet-big strong{animation:floatY2 6s ease-in-out infinite}
+</style>
+<style id="cp-logs">
+/* ===== Live log explorer visuals (presentation only) ===== */
+.log-explorer-card{padding:16px!important}
+.log-toolbar{border-bottom:1px solid rgba(56,232,255,.22)!important;gap:9px}
+.log-toolbar select,.log-filterbar select,.log-search{background:rgba(10,24,42,.8)!important;border-color:rgba(56,232,255,.22)!important;transition:border-color .2s,box-shadow .2s}
+.log-toolbar select:focus,.log-filterbar select:focus,.log-search:focus{outline:none;border-color:var(--neo-cyan)!important;box-shadow:0 0 0 3px rgba(56,232,255,.18)}
+.log-action,.log-icon-btn,.log-level{transition:all .2s}
+.log-action:hover,.log-icon-btn:hover,.log-level:hover{transform:translateY(-2px);box-shadow:0 0 18px rgba(56,232,255,.3);border-color:var(--neo-cyan)}
+.log-action.live-stop{background:linear-gradient(135deg,#00b85a,#00d39a)!important;border-color:#3dffb5!important;box-shadow:0 0 20px rgba(61,255,181,.4);animation:liveBtn 2s ease-in-out infinite}
+@keyframes liveBtn{50%{box-shadow:0 0 32px rgba(61,255,181,.7)}}
+.log-action.live-start{box-shadow:0 0 16px rgba(61,255,181,.15)}
+.log-level{background:rgba(10,24,42,.7);letter-spacing:.8px}
+.log-level.active.err{background:rgba(255,102,117,.14);box-shadow:0 0 14px rgba(255,102,117,.25)}
+.log-level.active.warn{background:rgba(255,189,74,.12);box-shadow:0 0 14px rgba(255,189,74,.22)}
+.log-level.active.info{background:rgba(88,165,255,.12);box-shadow:0 0 14px rgba(88,165,255,.22)}
+.log-level.active.dbg,.log-level.active.other{background:rgba(170,184,204,.10)}
+.log-status{padding:8px 12px!important;margin:2px 0 10px;border:1px solid rgba(56,232,255,.18);border-radius:10px;background:rgba(5,14,26,.6)}
+#logLiveStatus{text-shadow:0 0 10px rgba(61,255,181,.7);animation:statusBlink 2s ease-in-out infinite}
+@keyframes statusBlink{50%{opacity:.65}}
+#page-logs .logbox{min-height:340px}
+</style>
+<style id="cp-mgmt">
+/* ===== Management pages visuals (Topology, Applications, Timeline, Live Traffic, Helm, GitOps, Checks, Capacity, Cost) ===== */
+.glass-sidebar{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(56,232,255,.4) transparent}
+.glass-sidebar::-webkit-scrollbar{width:5px}.glass-sidebar::-webkit-scrollbar-thumb{background:rgba(56,232,255,.4);border-radius:5px}
+@media(min-width:951px){.glass-sidebar{gap:5px}.glass-sidebar .side-link{padding:9px 13px}.side-brand{padding-bottom:12px}.glass-sidebar .side-label{padding-top:11px}}
+.side-label{display:flex;align-items:center;gap:8px}
+.side-label:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(56,232,255,.35),transparent)}
+@media(max-width:950px){.side-label:after{display:none}}
+
+/* per-page accent line under the heading */
+#page-topology .page-heading h2,#page-gitops .page-heading h2{background-image:linear-gradient(90deg,#fff 15%,#8b7bff 75%)}
+#page-timeline .page-heading h2,#page-cost .page-heading h2{background-image:linear-gradient(90deg,#fff 15%,#ffc15a 80%)}
+#page-checks .page-heading h2,#page-helm .page-heading h2{background-image:linear-gradient(90deg,#fff 15%,#3dffb5 80%)}
+
+/* topology */
+.topology-grid{gap:16px}
+.topology-ns-card{position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;animation:floatY 7s ease-in-out infinite;
+ background:linear-gradient(145deg,rgba(24,60,98,.85),rgba(12,22,46,.9))!important}
+.topology-ns-card:nth-child(2n){animation-duration:8.5s;animation-delay:-2s}.topology-ns-card:nth-child(3n){animation-duration:6.4s;animation-delay:-4s}
+.topology-ns-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--neo-cyan),var(--neo-violet))}
+.topology-ns-card:after{content:"";position:absolute;right:-26px;top:-26px;width:100px;height:100px;border-radius:50%;background:var(--neo-violet);opacity:.13;filter:blur(14px)}
+.topology-ns-card:hover{animation-play-state:paused;transform:translateY(-5px) scale(1.02);border-color:var(--neo-cyan)!important;box-shadow:0 0 34px rgba(56,232,255,.28)}
+.topology-ns-card h3{text-shadow:0 0 14px rgba(131,188,255,.5)}
+.topology-counts span{border:1px solid rgba(56,232,255,.18);transition:all .2s}.topology-counts span:hover{background:rgba(56,232,255,.18);color:#fff;transform:translateY(-2px)}
+#topology-summary .metric{font-size:38px}
+
+/* timeline: a vertical rail with glowing nodes */
+.timeline-list{position:relative;padding-left:22px}
+.timeline-list:before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--neo-cyan),var(--neo-violet),transparent);border-radius:2px;opacity:.7}
+.timeline-event{position:relative;transition:transform .2s,border-color .2s,background .2s;animation:riseIn .4s cubic-bezier(.2,.8,.2,1) both}
+.timeline-event:before{content:"";position:absolute;left:-21px;top:19px;width:10px;height:10px;border-radius:50%;background:var(--neo-green);box-shadow:0 0 0 3px rgba(61,255,181,.18),0 0 14px var(--neo-green)}
+.timeline-event:has(.status-fail){border-color:rgba(255,77,109,.35);background:linear-gradient(90deg,rgba(255,77,109,.10),rgba(14,34,54,.68))}
+.timeline-event:has(.status-fail):before{background:var(--neo-red);box-shadow:0 0 0 3px rgba(255,77,109,.2),0 0 14px var(--neo-red);animation:neoPulse 1.8s infinite}
+.timeline-event:hover{transform:translateX(6px);border-color:var(--neo-cyan)}
+.timeline-event b.status-pass,.timeline-event b.status-fail{padding:2px 8px;border-radius:20px;height:fit-content;font-size:10px;border:1px solid currentColor;background:rgba(255,255,255,.04)}
+
+/* notices (helm / gitops / capacity) */
+.notice{position:relative;padding-left:46px;border-color:rgba(56,232,255,.28);background:linear-gradient(90deg,rgba(56,232,255,.10),rgba(22,49,73,.55));box-shadow:0 0 26px rgba(56,232,255,.08)}
+.notice:before{content:"i";position:absolute;left:14px;top:50%;margin-top:-12px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px/1 Georgia,serif;color:#071321;background:linear-gradient(135deg,var(--neo-cyan),var(--neo-violet));box-shadow:0 0 16px rgba(56,232,255,.5)}
+
+/* checks */
+.status-pass,.status-warn,.status-fail{font-weight:800;letter-spacing:.8px;font-size:11px}
+td.status-pass,td.status-warn,td.status-fail{position:relative;padding-left:28px}
+td.status-pass:before,td.status-warn:before,td.status-fail:before{content:"";position:absolute;left:11px;top:50%;margin-top:-4px;width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+td.status-pass{color:var(--neo-green)}td.status-warn{color:var(--neo-amber)}td.status-fail{color:var(--neo-red)}
+td.status-fail:before{animation:neoPulse 1.8s infinite}
+#page-checks .grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:18px}
+#page-checks .grid .card .metric{font-size:48px}
+#page-checks .grid .card:nth-child(1){border-color:rgba(61,255,181,.3)}#page-checks .grid .card:nth-child(2){border-color:rgba(255,193,90,.3)}#page-checks .grid .card:nth-child(3){border-color:rgba(255,77,109,.3)}
+#page-checks .grid .card:nth-child(1):after,#page-checks .grid .card:nth-child(2):after,#page-checks .grid .card:nth-child(3):after{content:"";position:absolute;right:-24px;bottom:-24px;width:110px;height:110px;border-radius:50%;opacity:.14;filter:blur(12px)}
+#page-checks .grid .card:nth-child(1):after{background:var(--neo-green)}#page-checks .grid .card:nth-child(2):after{background:var(--neo-amber)}#page-checks .grid .card:nth-child(3):after{background:var(--neo-red)}
+#page-checks .metric-head span{font-weight:800;letter-spacing:2px}
+
+/* traffic */
+#page-traffic .grid{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:6px}
+#page-traffic .metric{font-size:44px}
+#page-traffic .card:nth-child(1) .metric-head span:last-child,#page-traffic .card:nth-child(2) .metric-head span:last-child{padding:3px 9px;border-radius:20px;border:1px solid currentColor;font-size:10px;font-weight:800}
+#page-traffic .grid .card{overflow:hidden}
+#page-traffic .grid .card:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,var(--neo-cyan),transparent);background-size:200% 100%;animation:trafficFlow 2.4s linear infinite}
+#page-traffic .grid .card:nth-child(2):after{background-image:linear-gradient(90deg,transparent,var(--neo-violet),transparent);animation-direction:reverse}
+@keyframes trafficFlow{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* capacity meters */
+#page-capacity .grid{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:16px}
+#page-capacity .metric{font-size:40px}
+#page-capacity .meter{height:12px;margin-top:16px}
+#page-capacity .meter i{position:relative;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+#page-capacity .meter i:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);background-size:60% 100%;background-repeat:no-repeat;animation:meterShine 2.4s linear infinite}
+@keyframes meterShine{from{background-position:-100% 0}to{background-position:220% 0}}
+
+/* cost */
+.cost-card{overflow:hidden;border-color:rgba(255,193,90,.35)!important;background:linear-gradient(135deg,rgba(60,44,16,.55),rgba(7,19,34,.8))!important}
+.cost-card:after{content:"";position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,193,90,.28),transparent 70%)}
+.cost-card .metric{font-size:40px;background:linear-gradient(90deg,#fff,var(--neo-amber));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.cost-card .visual-kicker{color:var(--neo-amber)}
+#page-cost .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#page-cost .grid .metric{font-size:38px}
+
+/* namespace / limit selectors inside pages */
+.page-view .section select{background:rgba(10,24,42,.85);border-color:rgba(56,232,255,.25)}
+.page-view .section select:focus{outline:none;border-color:var(--neo-cyan);box-shadow:0 0 0 3px rgba(56,232,255,.18)}
+@media(max-width:650px){#page-checks .grid,#page-traffic .grid,#page-capacity .grid,#page-cost .grid{grid-template-columns:1fr}}
+</style>
+<style id="cp-topo">
+/* ===== Interactive topology visuals (expand/collapse cards, drill-down, relationship graph) ===== */
+.topology-summary-button{position:relative;overflow:hidden;text-align:left}
+.topology-summary-button .metric-head span:last-child{color:var(--neo-cyan);transition:transform .25s}
+.topology-summary-button:hover .metric-head span:last-child{transform:translate(3px,-3px)}
+.topology-summary-button:hover{transform:translateY(-4px)!important;box-shadow:0 18px 44px rgba(0,0,0,.35),0 0 30px rgba(56,232,255,.28)!important;animation-play-state:paused}
+.topology-summary-button:after{content:"";position:absolute;right:-24px;bottom:-24px;width:90px;height:90px;border-radius:50%;background:var(--neo-cyan);opacity:.10;filter:blur(12px)}
+.topology-ns-card.expanded{animation:none;border-color:rgba(56,232,255,.55)!important;box-shadow:0 0 36px rgba(56,232,255,.18)}
+.topology-ns-card.expanded:hover{transform:none}
+.topology-ns-head h3 small{color:#7f9bb8;font-weight:500}
+.topology-expand{transition:all .2s;font-size:11px;letter-spacing:.4px}
+.topology-expand:hover,.topology-expand[aria-expanded="true"]{background:linear-gradient(135deg,rgba(56,232,255,.28),rgba(139,123,255,.28))!important;border-color:var(--neo-cyan)!important;box-shadow:0 0 16px rgba(56,232,255,.3)}
+.topology-counts button{transition:all .2s;border:1px solid rgba(56,232,255,.18)}
+.topology-counts button:hover{transform:translateY(-2px)}
+.topology-ns-card.expanded .topology-resource-list{animation:riseIn .35s cubic-bezier(.2,.8,.2,1) both}
+.topology-resource-list h4{letter-spacing:1.4px;background:linear-gradient(90deg,var(--neo-cyan),var(--neo-violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.topology-resource-item{transition:all .2s}
+.topology-resource-item:hover{transform:translateX(5px);box-shadow:0 0 16px rgba(56,232,255,.2)}
+.topology-resource-item small{padding:2px 7px;border-radius:20px;border:1px solid rgba(61,255,181,.3);color:var(--neo-green)}
+.topology-graph{background:linear-gradient(135deg,rgba(7,22,38,.6),rgba(26,24,70,.35));box-shadow:inset 0 0 30px rgba(56,232,255,.05)}
+.topology-graph-node{transition:transform .2s,box-shadow .2s;box-shadow:0 0 16px rgba(56,232,255,.12)}
+.topology-graph-node:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(56,232,255,.4)}
+.topology-graph-arrow{color:var(--neo-cyan);text-shadow:0 0 12px var(--neo-cyan);animation:arrowPulse 1.6s infinite}
+.topology-graph-arrow small{display:block;font-size:9px;color:#8da8c1;text-shadow:none}
+#page-topology .section .smallbtn{border-color:rgba(56,232,255,.3);background:linear-gradient(135deg,rgba(56,232,255,.14),rgba(139,123,255,.14))}
+#topology-detail-title{text-shadow:0 0 14px rgba(56,232,255,.35)}
+#topology-resource-rows tr:not(:has(.empty)) td:nth-child(3) b{color:#d6f6ff}
+</style>
+<style id="cp-fix">
+/* ===== Click-reliability fixes =====
+   Root causes of "sometimes not clickable":
+   1. Decorative ::before/::after blobs (absolutely positioned, blurred circles) sat ON TOP of buttons
+      (the Expand button lives in the same top-right corner as the .topology-ns-card:after glow).
+   2. Cards float via an infinite `translate` animation and lift on :hover, so the click target moves
+      under the pointer between mousedown and mouseup -> the browser drops the click.
+   3. :hover transforms on buttons (translateY) flip the hover state on the 1-2px edge -> flicker.
+   4. The 30s auto-refresh rebuilt the DOM mid-click (see stabilize() in the script).            */
+*::before,*::after{pointer-events:none}
+button,select,input,.side-link,[role="button"]{touch-action:manipulation}
+button:hover,.smallbtn:hover,.log-action:hover,.log-icon-btn:hover,.log-level:hover,
+.topology-expand:hover,.topology-counts button:hover,.topology-resource-item:hover,.topo-chip:hover{transform:none!important}
+/* anything clickable stays still */
+.topology-ns-card,.topology-summary-button,.metric-tile,.severity-card,.topology-grid>*,
+#topology-summary>*,.side-link{animation:none!important;translate:none!important}
+.topology-ns-card:hover,.topology-ns-card.expanded:hover,.topology-summary-button:hover,
+.metric-tile:hover,.severity-card:hover{transform:none!important}
+.topology-ns-card,.topology-summary-button{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.topology-expand,.topo-chip,.topo-ns-title,.topology-counts button,.topology-resource-item{position:relative;z-index:2}
+.topology-ns-card{overflow:visible}
+button:focus-visible,[role="button"]:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--neo-cyan,#38e8ff);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<style id="cp-graph">
+/* ===== Topology: tabs, namespace cards, resource graph ===== */
+.topo-tabs{display:flex;gap:6px;margin:6px 0 4px}
+.topo-tab{padding:9px 16px;border-radius:10px 10px 0 0;border:1px solid var(--glass-line,#23334b);border-bottom:2px solid transparent;background:rgba(10,24,42,.6);color:#a9bad0;font-weight:600}
+.topo-tab.active{color:#eafaff;border-bottom-color:var(--neo-cyan,#38e8ff);background:rgba(56,232,255,.10)}
+.topo-note{font-size:11px;color:#8da8c1;margin:0 0 10px}
+#topology-summary{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:16px}
+.topology-summary-button{display:block;min-height:112px}
+.topology-ns-head{align-items:flex-start}
+.topo-ns-title{all:unset;box-sizing:border-box;cursor:pointer;font-size:16px;font-weight:700;color:#83bcff;text-shadow:0 0 14px rgba(131,188,255,.4);padding:4px 2px;border-radius:6px}
+.topo-ns-title:hover{text-decoration:underline}
+.topo-ns-title small{color:#7f9bb8;font-weight:500;font-size:12px}
+.topo-card-actions{display:flex;gap:6px;flex-shrink:0}
+.topo-chip{font:inherit;font-size:11px;padding:7px 10px;border-radius:8px;border:1px solid rgba(105,170,220,.22);background:rgba(80,120,170,.15);color:#bfd1e5;cursor:pointer}
+.topo-chip:hover,.topo-chip.active{background:rgba(42,175,205,.25);border-color:#4bd4e4;color:#e9fcff}
+.topology-resource-list{display:none}
+.topology-ns-card.expanded .topology-resource-list{display:block}
+.topo-group h4{margin:12px 0 6px}
+.topo-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;padding:8px 10px;margin:4px 0;border:1px solid rgba(110,170,210,.14);border-radius:8px;background:rgba(4,16,29,.35);font:inherit;font-size:11px;color:#c4d7e9;cursor:pointer}
+.topo-item:hover{border-color:#4bd4e4;background:rgba(25,95,120,.28)}
+.topo-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbadge{flex-shrink:0;font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid currentColor}
+.hbadge.ok{color:#3dffb5}.hbadge.warn{color:#ffc15a}.hbadge.bad{color:#ff6b85}.hbadge.neutral{color:#8da8c1}
+
+/* graph toolbar */
+.tg-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
+.tg-crumbs{display:flex;align-items:center;gap:8px;color:#8da8c1}
+.tg-crumb{background:none;border:0;color:#8da8c1;padding:6px 4px;cursor:pointer;font-size:13px}
+.tg-crumb:hover{color:var(--neo-cyan,#38e8ff);text-decoration:underline;box-shadow:none}
+.tg-crumbs select{min-width:170px;font-weight:700}
+.tg-search input{background:rgba(10,24,42,.85);border:1px solid rgba(56,232,255,.25);color:var(--text);padding:9px 12px;border-radius:9px;min-width:240px}
+.tg-spacer{flex:1}
+.tg-live{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:30px;border:1px solid rgba(61,255,181,.3);background:rgba(16,43,42,.7);color:#6fe0b3;font-size:12px}
+.tg-live i{width:8px;height:8px;border-radius:50%;background:#3dffb5;box-shadow:0 0 8px #3dffb5}
+.tg-live.paused{border-color:rgba(255,193,90,.35);color:#ffc15a;background:rgba(60,44,16,.5)}.tg-live.paused i{background:#ffc15a;box-shadow:none}
+.tg-live.error{border-color:rgba(255,77,109,.4);color:#ff8da0;background:rgba(59,32,45,.6)}.tg-live.error i{background:#ff6b85;box-shadow:none}
+.tg-kinds{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.tg-kind-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:6px 10px;border-radius:20px;border:1px solid rgba(105,170,220,.25);background:rgba(10,24,42,.7);color:#c4d7e9;cursor:pointer}
+.tg-kind-chip.off{opacity:.45;text-decoration:line-through}
+.tg-kind-chip b{font-weight:700;color:#8fe9f5}
+
+/* stage */
+.tg-stage{position:relative;overflow:hidden;height:calc(100vh - 330px);min-height:460px;border:1px solid var(--glass-line,#23334b);border-radius:14px;
+ background:radial-gradient(circle at 1px 1px,rgba(120,160,210,.18) 1px,transparent 0) 0 0/22px 22px,#0b0f17;cursor:grab;touch-action:none;outline:none}
+.tg-stage.panning{cursor:grabbing}
+.tg-viewport{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.tg-edges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.tg-nodes{position:absolute;left:0;top:0}
+.tg-edge{fill:none;stroke-width:1.6;opacity:.85}
+.tg-edge.e-selects,.tg-edge.e-routes{stroke:#4f8cff}
+.tg-edge.e-owns{stroke:#6b7686}
+.tg-edge.e-mounts{stroke:#d94fa0}
+.tg-edge.e-config,.tg-edge.e-identity,.tg-edge.e-middleware{stroke:#e6a93a}
+.tg-edge.dim{opacity:.1}.tg-edge.hl{opacity:1;stroke-width:2.4}
+.tg-node{position:absolute;width:210px;height:58px;box-sizing:border-box;padding:8px 12px 7px 12px;border-radius:8px;cursor:pointer;
+ background:#101722;border:1px solid #243247;border-left:3px solid #3a475a;color:#e6eefb;overflow:hidden;user-select:none;transition:opacity .15s,box-shadow .15s,border-color .15s}
+.tg-node:hover{border-color:#4bd4e4;box-shadow:0 0 0 1px rgba(75,212,228,.4),0 6px 20px rgba(0,0,0,.45)}
+.tg-node.health-ok{border-left-color:#2fd08a}.tg-node.health-warn{border-left-color:#f0b43c}.tg-node.health-bad{border-left-color:#ff5370}.tg-node.health-neutral{border-left-color:#5b6677}
+.tg-node.ghost{border-style:dashed;border-color:#ff5370;background:#1d1017}
+.tg-node.dim{opacity:.22}.tg-node.sel{border-color:#38e8ff;box-shadow:0 0 0 2px rgba(56,232,255,.5),0 8px 26px rgba(0,0,0,.5)}.tg-node.match{box-shadow:0 0 0 2px rgba(255,193,90,.7)}
+.tg-kind{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.9px;color:#8795a8;font-weight:700}
+.tg-ico{width:14px;text-align:center;color:#8fb4e8}
+.tg-dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:#5b6677}
+.health-ok .tg-dot{background:#2fd08a;box-shadow:0 0 6px #2fd08a}.health-warn .tg-dot{background:#f0b43c;box-shadow:0 0 6px #f0b43c}.health-bad .tg-dot{background:#ff5370;box-shadow:0 0 6px #ff5370}
+.tg-name{margin-top:3px;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-sub{font-size:10.5px;color:#8795a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tg-controls{position:absolute;right:12px;top:12px;display:flex;flex-direction:row;gap:6px;z-index:5}
+.tg-controls button{width:36px;height:36px;padding:0;font-size:17px;border-radius:10px;background:rgba(16,23,34,.92)}
+.tg-legend{position:absolute;right:12px;bottom:12px;display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:#8795a8;background:rgba(11,15,23,.85);padding:7px 10px;border-radius:8px;border:1px solid #1d2838;z-index:4;pointer-events:none}
+.tg-legend span{display:inline-flex;align-items:center;gap:5px}.tg-legend i{width:16px;height:0;border-top:2px solid}
+.tg-status{position:absolute;left:14px;bottom:14px;font-size:11px;color:#8795a8;z-index:4;pointer-events:none}
+.tg-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#8da8c1;padding:30px;z-index:3}
+.tg-empty[hidden]{display:none}
+.tg-wrap{display:flex;align-items:stretch;gap:12px}.tg-wrap .tg-stage{flex:1;min-width:0}
+.tg-panel{position:relative;flex:0 0 340px;width:340px;max-height:calc(100vh - 330px);min-height:460px;border:1px solid #243247;border-radius:14px;overflow:auto;background:rgba(10,15,24,.97);padding:16px;cursor:default}
+.tg-panel[hidden]{display:none}
+.tg-panel h3{margin:4px 0 2px;font-size:16px;word-break:break-all}
+.tg-panel .tg-kind{margin-bottom:2px}
+.tg-panel dl{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;margin:12px 0;font-size:11.5px}
+.tg-panel dt{color:#8795a8}.tg-panel dd{margin:0;word-break:break-word;color:#dce8f8}
+.tg-panel h4{font-size:10px;letter-spacing:1.2px;color:#7fdcf0;margin:16px 0 6px}
+.tg-rel{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;padding:7px 9px;margin:3px 0;font-size:11px;border-radius:7px;background:#0e1520;border:1px solid #1f2a3a}
+.tg-panel-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tg-close{position:absolute;right:10px;top:10px;padding:4px 10px}
+body[data-theme="light"] .topo-tab{color:#42536b;background:#fff}body[data-theme="light"] .topo-tab.active{color:#0b3d5a;background:#e3f6fb}body[data-theme="light"] .topo-chip,body[data-theme="light"] .topo-item,body[data-theme="light"] .tg-kind-chip,body[data-theme="light"] .tg-rel{background:#eef3fa;color:#172338}body[data-theme="light"] .topo-ns-title{color:#1c5fb8;text-shadow:none}body[data-theme="light"] .tg-search input{background:#fff}
+body[data-theme="light"] .tg-stage{background:radial-gradient(circle at 1px 1px,rgba(60,90,140,.18) 1px,transparent 0) 0 0/22px 22px,#f4f7fc}
+body[data-theme="light"] .tg-node{background:#fff;border-color:#d0dae8;color:#172338}
+body[data-theme="light"] .tg-node.ghost{background:#fff0f2}
+body[data-theme="light"] .tg-panel,body[data-theme="light"] .tg-legend{background:rgba(255,255,255,.97);color:#172338}
+body[data-theme="light"] .tg-controls button{background:#fff}
+@media(max-width:900px){.tg-wrap{flex-direction:column}.tg-panel{flex:none;width:100%;min-height:0;max-height:50vh}}
+@media(max-width:760px){.tg-search input{min-width:100%}.tg-stage{height:70vh}}
+</style>
+</head>
+<body>
+<aside class="glass-sidebar">
+ <div class="side-brand">✦ ClusterPulse <span class="cyan">AI</span></div>
+ <div class="side-label">DASHBOARDS</div>
+ <a class="side-link active" href="#overview" data-page="overview" onclick="navigateTo('overview');return false"><span class="ico">⌂</span>Overview</a>
+ <a class="side-link" href="#incidents" data-page="incidents" onclick="navigateTo('incidents');return false"><span class="ico">⚑</span>Incidents</a>
+ <a class="side-link" href="#nodes" data-page="nodes" onclick="navigateTo('nodes');return false"><span class="ico">▦</span>Nodes</a>
+ <a class="side-link" href="#workloads" data-page="workloads" onclick="navigateTo('workloads');return false"><span class="ico">▤</span>Workloads</a>
+ <a class="side-link" href="#pods" data-page="pods" onclick="navigateTo('pods');return false"><span class="ico">◈</span>Pods</a>
+ <a class="side-link" href="#logs" data-page="logs" onclick="navigateTo('logs');return false"><span class="ico">≋</span>Logs</a>
+ <a class="side-link" href="#rca" data-page="rca" onclick="navigateTo('rca');return false"><span class="ico">✧</span>AI RCA</a>
+ <div class="side-label">MANAGEMENT</div>
+ <a class="side-link" href="#topology" data-page="topology" onclick="navigateTo('topology');return false"><span class="ico">⌘</span>Topology</a>
+ <a class="side-link" href="#applications" data-page="applications" onclick="navigateTo('applications');return false"><span class="ico">▣</span>Applications</a>
+ <a class="side-link" href="#timeline" data-page="timeline" onclick="navigateTo('timeline');return false"><span class="ico">◷</span>Timeline</a>
+ <a class="side-link" href="#traffic" data-page="traffic" onclick="navigateTo('traffic');return false"><span class="ico">⌁</span>Live Traffic</a>
+ <a class="side-link" href="#helm" data-page="helm" onclick="navigateTo('helm');return false"><span class="ico">⬡</span>Helm</a>
+ <a class="side-link" href="#gitops" data-page="gitops" onclick="navigateTo('gitops');return false"><span class="ico">⑂</span>GitOps</a>
+ <a class="side-link" href="#checks" data-page="checks" onclick="navigateTo('checks');return false"><span class="ico">✓</span>Checks</a>
+ <a class="side-link" href="#capacity" data-page="capacity" onclick="navigateTo('capacity');return false"><span class="ico">◴</span>Capacity</a>
+ <a class="side-link" href="#cost" data-page="cost" onclick="navigateTo('cost');return false"><span class="ico">＄</span>Cost</a>
+ <div style="flex:1"></div>
+ <div class="side-label">SYSTEM</div>
+ <div class="side-link" style="cursor:default;opacity:.75"><span class="ico">⚙</span>Preferences</div>
+</aside>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="logo">✦</div><div><h1>ClusterPulse <span class="cyan">AI</span></h1><p>Kubernetes observability · intelligent incident response</p></div></div><div class="topright"><span class="pill"><i class="dot"></i><span id="connection">Connecting</span></span><div class="toolbar"><select id="themeMode" class="theme-select" aria-label="Theme" onchange="setTheme(this.value)"><option value="system">System theme</option><option value="light">Light theme</option><option value="dark">Dark theme</option></select><button onclick="loadAll()">↻ Refresh</button></div></div></header>
+<section class="page-view" id="page-overview" data-page="overview">
+ <div class="page-heading"><div><div class="eyebrow">CLUSTERPULSE AI</div><h2>Cluster overview</h2><p>Cluster posture, resource utilization, and workload health at a glance.</p></div><span class="page-chip">LIVE MONITORING</span></div>
+<div class="ops-hero"><div class="ops-health glass-panel"><div class="visual-kicker">CLUSTER POSTURE</div><div class="gauge" id="overview-gauge"><div class="gauge-inner"><strong id="ov-health">—</strong><span>HEALTH SCORE</span></div></div><div class="health-foot"><span class="live-dot"></span><span id="ov-health-caption">Waiting for cluster telemetry</span></div></div><div class="ops-chart glass-panel"><div class="visual-head"><div><div class="visual-kicker">RESOURCE TELEMETRY</div><h3>Compute utilization</h3></div><span class="live-pill">LIVE METRICS</span></div><div class="resource-pair"><div><span>CPU</span><strong id="ov-cpu">—</strong><div class="meter"><i id="ov-cpu-bar"></i></div></div><div><span>MEMORY</span><strong id="ov-memory">—</strong><div class="meter blue-meter"><i id="ov-memory-bar"></i></div></div></div><svg class="sparkline" viewBox="0 0 600 110" preserveAspectRatio="none" aria-label="Decorative telemetry grid"><path d="M0 88 C45 78 52 30 98 50 S160 90 205 48 S265 15 310 44 S370 90 420 48 S500 30 600 18"/><path class="sparkline-fill" d="M0 88 C45 78 52 30 98 50 S160 90 205 48 S265 15 310 44 S370 90 420 48 S500 30 600 18 L600 110 L0 110Z"/></svg><div class="chart-foot"><span>CPU / MEMORY TREND</span><span>Prometheus-backed current readings</span></div></div><div class="ops-side glass-panel"><div class="visual-kicker">FLEET SNAPSHOT</div><div class="fleet-number" id="ov-nodes">—</div><span>Nodes in cluster</span><div class="fleet-divider"></div><div class="fleet-row"><span>Pods</span><b id="ov-pods">—</b></div><div class="fleet-row"><span>Unhealthy</span><b class="danger-text" id="ov-failed">—</b></div><div class="fleet-row"><span>Open incidents</span><b class="warn-text" id="ov-incidents">—</b></div><div class="fleet-divider"></div><div class="visual-kicker">DEPLOYMENT AVAILABILITY</div><div class="deploy-value" id="ov-deploy">—</div></div></div><div class="overview-lower"><div class="glass-panel topology-panel"><div class="visual-head"><div><div class="visual-kicker">CLUSTER MAP</div><h3>Node & workload topology</h3></div><span class="live-pill">LIVE INVENTORY</span></div><div class="topology-art"><div class="topo-core">K3S<br><small>CONTROL PLANE</small></div><div class="topo-node n1">NODE 01</div><div class="topo-node n2">NODE 02</div><div class="topo-node n3">WORKLOADS</div><svg viewBox="0 0 700 220" preserveAspectRatio="none"><path d="M350 110 L120 35 M350 110 L580 35 M350 110 L350 205 M120 35 L350 205 M580 35 L350 205"/></svg></div><p class="visual-note">Topology is a conceptual cluster view; node and workload counts are sourced from Kubernetes.</p></div><div class="glass-panel health-list"><div class="visual-kicker">OPERATIONAL SIGNALS</div><h3>Cluster health checks</h3><div class="signal-row"><i class="signal green-signal"></i><span>Node readiness</span><b id="ov-node-status">—</b></div><div class="signal-row"><i class="signal cyan-signal"></i><span>Pod inventory</span><b id="ov-pod-status">—</b></div><div class="signal-row"><i class="signal amber-signal"></i><span>Incident queue</span><b id="ov-incident-status">—</b></div></div></div>
+
+<div id="overview"></div><div class="grid">
+<div class="card metric-tile" role="button" tabindex="0" onclick="navigateTo('overview')"><div class="metric-head"><span>CLUSTER HEALTH</span><span class="green">●</span></div><div class="metric green" id="health">—</div><div class="sub" id="healthsub">Awaiting cluster data</div></div>
+<div class="card metric-tile" role="button" tabindex="0" onclick="navigateTo('pods')"><div class="metric-head"><span>TOTAL PODS</span><span class="cyan">◈</span></div><div class="metric" id="pods">—</div><div class="sub" id="podsub">Across monitored namespaces</div></div>
+<div class="card metric-tile" role="button" tabindex="0" onclick="navigateTo('pods')"><div class="metric-head"><span>UNHEALTHY PODS</span><span class="red">◆</span></div><div class="metric red" id="failed">—</div><div class="sub">Pending, failed or not ready</div></div>
+<div class="card metric-tile" role="button" tabindex="0" onclick="navigateTo('incidents')"><div class="metric-head"><span>OPEN INCIDENTS</span><span class="amber">⚑</span></div><div class="metric amber" id="incidents">—</div><div class="sub" id="incsub">AI investigation records</div></div>
+</div>
+<div class="section"><h2>Cluster intelligence</h2><span id="updated">Last updated —</span></div>
+<div id="cluster"></div><div class="two">
+<div class="card"><div class="metric-head"><span>WORKLOAD HEALTH</span><span>Pods by state</span></div><div class="chart" id="podchart"></div><div class="legend"><span><i style="background:#51d6a2"></i>Running</span><span><i style="background:#ffc36a"></i>Pending</span><span><i style="background:#ff7185"></i>Failed / Unknown</span></div></div>
+<div class="card"><div class="metric-head"><span>NODE FLEET</span><span id="nodecount">—</span></div><div style="display:flex;align-items:center;gap:22px;padding:22px 8px"><div style="font-size:48px" class="cyan">⌘</div><div><div class="metric" id="nodes">—</div><div class="sub">Kubernetes nodes</div><div style="margin-top:12px" id="nodestatus"></div></div></div></div>
+</div>
+<div class="section"><h2>Resource utilization</h2><span>Prometheus · when configured</span></div>
+<div class="three">
+<div class="card"><div class="metric-head"><span>CPU UTILIZATION</span><span class="cyan">CPU</span></div><div class="metric cyan" id="cpu">—</div><div class="sub" id="cpusub">Prometheus metric unavailable</div></div>
+<div class="card"><div class="metric-head"><span>MEMORY UTILIZATION</span><span class="blue">RAM</span></div><div class="metric blue" id="memory">—</div><div class="sub" id="memsub">Prometheus metric unavailable</div></div>
+<div class="card"><div class="metric-head"><span>DEPLOYMENT AVAILABILITY</span><span class="green">APP</span></div><div class="metric green" id="deploy">—</div><div class="sub" id="deploysub">Available / desired replicas</div></div>
+</div>
+
+
+</section>
+<section class="page-view" id="page-incidents" data-page="incidents" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CLUSTERPULSE AI</div><h2>Incident management</h2><p>Severity distribution, active alerts, and incident lifecycle.</p></div><span class="page-chip">LIVE MONITORING</span></div>
+<div class="incident-command"><div class="incident-score glass-panel"><div class="visual-kicker">INCIDENT HEALTH</div><div class="incident-ring"><strong id="ic-open">—</strong><span>OPEN</span></div><div class="incident-score-foot">Active incident records</div><div class="incident-mini"><span>CRITICAL</span><b id="ic-critical">—</b></div><div class="incident-mini"><span>HIGH</span><b id="ic-high">—</b></div></div><div class="incident-visual glass-panel"><div class="visual-head"><div><div class="visual-kicker">SEVERITY DISTRIBUTION</div><h3>Incident landscape</h3></div><span class="live-pill">LIVE INCIDENTS</span></div><div class="severity-bars"><div><span>CRITICAL</span><i><b id="ic-bar-critical"></b></i><strong id="ic-val-critical">0</strong></div><div><span>HIGH</span><i><b id="ic-bar-high"></b></i><strong id="ic-val-high">0</strong></div><div><span>MEDIUM</span><i><b id="ic-bar-medium"></b></i><strong id="ic-val-medium">0</strong></div><div><span>LOW</span><i><b id="ic-bar-low"></b></i><strong id="ic-val-low">0</strong></div></div><p class="visual-note">Select a severity to filter the incident register below.</p></div><div class="incident-flow glass-panel"><div class="visual-kicker">RESPONSE LIFECYCLE</div><h3>Investigation pipeline</h3><div class="flow-step"><i>01</i><span>Detected</span><b>Incident record</b></div><div class="flow-step"><i>02</i><span>Investigating</span><b>RCA analysis</b></div><div class="flow-step"><i>03</i><span>Notified</span><b>Email status</b></div><div class="flow-step"><i>04</i><span>Resolved</span><b>Operator action</b></div></div></div>
+
+<div id="incident-dashboard"></div>
+<div class="section"><h2>Incident intelligence · severity overview</h2><span>Click a severity to filter incidents</span></div>
+<div class="severity-grid">
+ <div class="card severity-card CRITICAL" onclick="filterIncidents('CRITICAL')"><span class="sev CRITICAL">CRITICAL</span><strong id="sev-critical">0</strong><small>Critical incidents</small></div>
+ <div class="card severity-card HIGH" onclick="filterIncidents('HIGH')"><span class="sev HIGH">HIGH</span><strong id="sev-high">0</strong><small>High severity</small></div>
+ <div class="card severity-card MEDIUM" onclick="filterIncidents('MEDIUM')"><span class="sev MEDIUM">MEDIUM</span><strong id="sev-medium">0</strong><small>Medium severity</small></div>
+ <div class="card severity-card LOW" onclick="filterIncidents('LOW')"><span class="sev LOW">LOW</span><strong id="sev-low">0</strong><small>Low severity</small></div>
+</div>
+<div class="section"><h2>Active incidents</h2><div class="toolbar"><select id="incident-filter" onchange="renderIncidents()"><option value="">All severities</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select><span id="incident-total">Live incident records</span></div><a class="link" href="/incidents">Incident API ↗</a></div>
+<div class="card tablewrap"><table><thead><tr><th>SEVERITY</th><th>NAMESPACE</th><th>RESOURCE</th><th>SUMMARY</th><th>STATUS</th><th>OCCURRENCES</th></tr></thead><tbody id="incidentrows"><tr><td colspan="6" class="empty">Loading incidents…</td></tr></tbody></table></div>
+
+</section>
+<section class="page-view" id="page-pods" data-page="pods" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CLUSTERPULSE AI</div><h2>Pod monitoring</h2><p>Inspect pod phases, readiness, restarts, and placement.</p></div><span class="page-chip">LIVE MONITORING</span></div>
+<div class="pod-hero glass-panel"><div><div class="visual-kicker">POD OPERATIONS CENTER</div><h3>Container lifecycle monitor</h3><p>Phase, readiness, restart count and node placement.</p></div><div class="pod-status-rings"><div class="pod-ring"><b id="pod-total-vis">—</b><span>TOTAL</span></div><div class="pod-ring ring-warn"><b id="pod-restart-vis">—</b><span>RESTARTS</span></div><div class="pod-ring ring-bad"><b id="pod-unhealthy-vis">—</b><span>UNHEALTHY</span></div></div></div><div class="pod-activity glass-panel"><div class="visual-kicker">POD STATE DISTRIBUTION</div><div class="pod-state-track"><i class="state-running" id="pod-running-bar"></i><i class="state-pending" id="pod-pending-bar"></i><i class="state-failed" id="pod-failed-bar"></i></div><div class="pod-state-legend"><span>● Running</span><span>● Pending</span><span>● Failed / Other</span></div></div>
+
+<div id="pods-section"></div><div class="section"><h2>Pod monitoring</h2><div class="toolbar"><input id="podsearch" placeholder="Search pod, namespace, node…" oninput="debouncedPods()"><select id="podphase" onchange="renderPods()"><option value="">All states</option><option>Running</option><option>Pending</option><option>Succeeded</option><option>Failed</option></select><button class="smallbtn" onclick="loadPods()">Refresh pods</button></div></div>
+<div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>POD</th><th>PHASE</th><th>READY</th><th>RESTARTS</th><th>NODE</th><th>CONDITION</th><th>LOGS</th></tr></thead><tbody id="podrows"><tr><td colspan="8" class="empty">Loading pods…</td></tr></tbody></table></div>
+
+</section>
+<section class="page-view" id="page-logs" data-page="logs" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CLUSTERPULSE AI</div><h2>Container logs</h2><p>Read current or previous container logs for a selected pod.</p></div><span class="page-chip">LIVE MONITORING</span></div>
+<div class="logs-hero glass-panel"><div class="visual-kicker">OBSERVABILITY / LOG EXPLORER</div><h3>Container log intelligence</h3><p>Inspect current and previous container output. Select a namespace and pod here to load logs directly.</p><div class="log-feature-row"><div><b>READ-ONLY</b><span>Safe log inspection</span></div><div><b>CONTAINER-AWARE</b><span>Choose container and tail length</span></div><div><b>LIVE FETCH</b><span>Retrieved from Kubernetes API</span></div></div></div>
+
+<div class="section"><h2>Container logs</h2><span id="logtitle">Choose a namespace and pod to begin</span></div>
+<div class="card log-explorer-card">
+ <div class="log-toolbar">
+  <select id="lognamespace" onchange="filterLogPods()"><option value="">All namespaces</option></select>
+  <select id="logpod" onchange="selectLogPod()"><option value="">Select pod</option></select>
+  <select id="logcontainer" onchange="refreshLogs()"><option value="">Default container</option></select>
+  <select id="logtail" onchange="refreshLogs()"><option value="100">100 lines</option><option value="200" selected>200 lines</option><option value="500">500 lines</option><option value="1000">1000 lines</option><option value="2000">2000 lines</option></select>
+  <label class="log-check"><input type="checkbox" id="previousLogs" onchange="togglePreviousLogs()"> Previous</label>
+  <button class="log-action live-stop" id="logLiveBtn" onclick="toggleLiveLogs()">■ Stop</button>
+  <button class="log-icon-btn" title="Refresh now" onclick="refreshLogs()">↻</button>
+  <button class="log-icon-btn" title="Download visible logs" onclick="downloadLogs()">⇩</button>
+  <button class="log-icon-btn" title="Clear view" onclick="clearLogView()">⌫</button>
+ </div>
+ <div class="log-filterbar">
+  <div class="log-levels">
+   <button class="log-level active err" data-level="ERR" onclick="toggleLogLevel(this)">ERR</button>
+   <button class="log-level active warn" data-level="WARN" onclick="toggleLogLevel(this)">WARN</button>
+   <button class="log-level active info" data-level="INFO" onclick="toggleLogLevel(this)">INFO</button>
+   <button class="log-level active dbg" data-level="DBG" onclick="toggleLogLevel(this)">DBG</button>
+   <button class="log-level active other" data-level="OTHER" onclick="toggleLogLevel(this)">OTHER</button>
+  </div>
+  <input id="logsearch" class="log-search" placeholder="Filter logs…" oninput="renderLogOutput()">
+  <label class="log-check"><input type="checkbox" id="logCompact" onchange="renderLogOutput()"> Compact</label>
+  <select id="logTimeMode" onchange="renderLogOutput()" title="Timestamp display"><option value="local">Local time</option><option value="utc">UTC</option></select>
+ </div>
+ <div class="log-status"><span id="logLiveStatus">LIVE · waiting for pod</span><span id="logLineCount">0 lines</span><span id="logUpdated"></span></div>
+ <pre class="logbox" id="logoutput">Select a namespace and pod to inspect container logs. Access is read-only.</pre>
+</div>
+</section>
+<section class="page-view" id="page-nodes" data-page="nodes" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CLUSTERPULSE AI</div><h2>Node health</h2><p>Node readiness, capacity signals, and pressure conditions.</p></div><span class="page-chip">LIVE MONITORING</span></div>
+<div class="fleet-hero glass-panel"><div><div class="visual-kicker">KUBERNETES INFRASTRUCTURE</div><h3>Node fleet operations</h3><p>Readiness and pressure conditions from the Kubernetes API.</p></div><div class="fleet-big"><strong id="node-live-count">—</strong><span>REGISTERED NODES</span></div><div class="fleet-status"><span class="signal green-signal"></span><span id="node-live-ready">Awaiting node inventory</span></div></div><div class="node-visual-grid"><div class="glass-panel node-map"><div class="visual-kicker">FLEET TOPOLOGY</div><h3>Node distribution</h3><div class="node-orbit live-node-grid" id="node-orbit"><div class="orbit-ring"></div><div class="orbit-core">K3S</div></div><p class="visual-note"></p></div><div class="glass-panel node-condition"><div class="visual-kicker">CONDITION MONITOR</div><h3>Live node conditions</h3><div id="node-condition"></div><div class="fleet-divider"></div><div class="visual-kicker">NODE CAPACITY</div><div id="node-capacity"></div></div></div>
+
+<div id="nodes-section"></div><div class="section"><h2>Node health</h2><span>Readiness and pressure conditions</span></div>
+<div class="card tablewrap"><table><thead><tr><th>NODE</th><th>READY</th><th>CPU</th><th>MEMORY</th><th>DISK PRESSURE</th><th>PID PRESSURE</th></tr></thead><tbody id="noderows"><tr><td colspan="6" class="empty">Loading nodes…</td></tr></tbody></table></div>
+
+</section>
+<section class="page-view" id="page-workloads" data-page="workloads" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CLUSTERPULSE AI</div><h2>Workload inventory</h2><p>Deployment and controller replica health across namespaces.</p></div><span class="page-chip">LIVE MONITORING</span></div>
+<div class="workload-hero glass-panel"><div><div class="visual-kicker">CONTROLLER OPERATIONS</div><h3>Workload orchestration</h3><p>Deployment, StatefulSet and DaemonSet replica health.</p></div><div class="workload-orbit"><div class="work-orbit-core">K8S</div><span class="work-pill wp1">DEPLOYMENTS <b id="wl-deployments">—</b></span><span class="work-pill wp2">STATEFULSETS <b id="wl-statefulsets">—</b></span><span class="work-pill wp3">DAEMONSETS <b id="wl-daemonsets">—</b></span><span class="work-pill wp4">REPLICASETS <b id="wl-replicasets">—</b></span></div></div><div class="workload-kpis"><div class="glass-panel"><span>INVENTORY</span><b id="wl-total">—</b><small>Workload objects</small></div><div class="glass-panel"><span>HEALTHY</span><b id="wl-healthy">—</b><small>Ready replicas</small></div><div class="glass-panel"><span>DEGRADED</span><b id="wl-degraded">—</b><small>Needs attention</small></div></div>
+
+<div id="workloads-section"></div><div class="section"><h2>Workload inventory</h2><div><select id="nsfilter" onchange="loadWorkloads()"><option value="">All namespaces</option></select></div></div>
+<div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>WORKLOAD</th><th>TYPE</th><th>READY</th><th>DESIRED</th><th>STATUS</th></tr></thead><tbody id="workrows"><tr><td colspan="6" class="empty">Loading workloads…</td></tr></tbody></table></div>
+
+
+</section>
+<section class="page-view" id="page-rca" data-page="rca" hidden>
+ <div class="page-heading"><div><div class="eyebrow">INTELLIGENCE CENTER</div><h2>AI Root Cause Analysis</h2><p>Review incident investigations, confidence, impact, and recommended remediation.</p></div><span class="page-chip">AI INVESTIGATIONS</span></div>
+<div class="rca-workspace"><div class="rca-focus glass-panel"><div class="visual-kicker">AI INVESTIGATION WORKSPACE</div><h3>Root cause intelligence</h3><p>Evidence-backed analysis, confidence, blast radius and remediation guidance.</p><div class="rca-flow"><span>INCIDENT</span><i>→</i><span>EVIDENCE</span><i>→</i><span>HYPOTHESES</span><i>→</i><span>REMEDIATION</span></div></div><div class="rca-side glass-panel"><div class="visual-kicker">ANALYSIS COVERAGE</div><div class="rca-coverage"><strong id="rca-coverage">—</strong><span>WITH RCA</span></div><p class="visual-note">Coverage is calculated from returned incident records with RCA data.</p></div></div>
+
+ <div class="grid rca-summary-grid">
+  <div class="card"><div class="metric-head"><span>INCIDENTS WITH RCA</span><span class="cyan">✧</span></div><div class="metric cyan" id="rca-count">—</div><div class="sub">Investigation records available</div></div>
+  <div class="card"><div class="metric-head"><span>ANALYSIS PENDING</span><span class="amber">◷</span></div><div class="metric amber" id="rca-pending">—</div><div class="sub">Awaiting AI analysis</div></div>
+  <div class="card"><div class="metric-head"><span>EMAIL SENT</span><span class="green">✉</span></div><div class="metric green" id="rca-emailed">—</div><div class="sub">Incident notifications delivered</div></div>
+  <div class="card"><div class="metric-head"><span>OPEN INVESTIGATIONS</span><span class="red">⚑</span></div><div class="metric red" id="rca-open">—</div><div class="sub">Incidents still open</div></div>
+ </div>
+ <div class="section"><h2>Investigation history</h2><span>Choose an incident to inspect the full RCA</span></div>
+ <div class="card tablewrap"><table><thead><tr><th>SEVERITY</th><th>RESOURCE</th><th>SUMMARY</th><th>RCA STATUS</th><th>CONFIDENCE</th><th>EMAIL</th><th>DETAILS</th></tr></thead><tbody id="rca-rows"><tr><td colspan="7" class="empty">Loading investigations…</td></tr></tbody></table></div>
+</section>
+<section class="page-view" id="page-topology" data-page="topology" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CLUSTER MAP</div><h2>Topology</h2><p>Namespace inventory and a live resource graph: Ingress → Service → Workload → Pod, with PVCs, ConfigMaps and ServiceAccounts. Read-only.</p></div><span class="page-chip">AUTO REFRESH</span></div>
+ <div class="topo-tabs" role="tablist">
+  <button type="button" class="topo-tab active" role="tab" id="topo-tab-ns" aria-selected="true" data-action="topo-tab" data-tab="ns">Namespaces</button>
+  <button type="button" class="topo-tab" role="tab" id="topo-tab-graph" aria-selected="false" data-action="topo-tab" data-tab="graph">Resource graph</button>
+ </div>
+
+ <div id="topo-view-ns">
+  <div class="section"><h2>Resource topology</h2><div class="toolbar"><select id="topology-ns" aria-label="Namespace filter" onchange="loadTopology(true)"><option value="">All namespaces</option></select><button type="button" class="smallbtn" data-action="topo-expand-all">Expand all</button><button type="button" class="smallbtn" data-action="topo-collapse-all">Collapse all</button></div></div>
+  <div id="topology-warnings"></div>
+  <div class="grid" id="topology-summary"></div>
+  <div class="topology-grid" id="topology-groups"></div>
+  <div class="section"><h2 id="topology-detail-title">Resource details</h2><span id="topology-detail-hint">Select a resource category on any namespace card.</span></div>
+  <div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>KIND</th><th>RESOURCE</th><th>STATUS</th><th>DETAILS</th></tr></thead><tbody id="topology-resource-rows"><tr><td colspan="5" class="empty">Choose Pods, Services, Workloads, Ingresses or PVCs to inspect resources.</td></tr></tbody></table></div>
+  <div class="section"><h2>Resource relationships</h2><span>Ingress / route → Service → Workload → Pod, plus PVC, ConfigMap and ServiceAccount links</span></div>
+  <div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>SOURCE</th><th>RELATION</th><th>TARGET</th></tr></thead><tbody id="topology-edges"></tbody></table></div>
+ </div>
+
+ <div id="topo-view-graph" hidden>
+  <div class="tg-bar">
+   <nav class="tg-crumbs" aria-label="Breadcrumb"><button type="button" class="tg-crumb" data-action="graph-back">All namespaces</button><span>/</span><select id="tg-ns" aria-label="Namespace"></select></nav>
+   <div class="tg-search"><input id="tg-search" type="search" placeholder="Search resources…  ( / )" aria-label="Search resources" autocomplete="off"></div>
+   <span class="tg-spacer"></span>
+   <span class="tg-live" id="tg-live" role="status"><i></i><span id="tg-live-text">Auto-updating</span></span>
+   <button type="button" id="tg-pause" data-action="graph-pause">Pause</button>
+  </div>
+  <div class="tg-kinds" id="tg-kinds" aria-label="Filter resource kinds"></div>
+  <div class="tg-wrap"><div class="tg-stage" id="tg-stage" tabindex="0" aria-label="Resource graph. Drag to pan, scroll to zoom.">
+   <div class="tg-viewport" id="tg-viewport"><svg class="tg-edges" id="tg-edges" aria-hidden="true"></svg><div class="tg-nodes" id="tg-nodes"></div></div>
+   <div class="tg-empty" id="tg-empty" hidden></div>
+   <div class="tg-controls">
+    <button type="button" data-action="graph-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+    <button type="button" data-action="graph-zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+    <button type="button" data-action="graph-fit" title="Fit to view (F)" aria-label="Fit to view">⤢</button>
+    <button type="button" data-action="graph-export" title="Download graph as JSON" aria-label="Download graph as JSON">⇩</button>
+   </div>
+   <div class="tg-status" id="tg-status"></div>
+   <div class="tg-legend" id="tg-legend"><span><i style="border-color:#4f8cff"></i>routes / selects</span><span><i style="border-color:#6b7686"></i>owns</span><span><i style="border-color:#d94fa0"></i>mounts</span><span><i style="border-color:#e6a93a"></i>config / identity / middleware</span></div>
+  </div>
+  <aside class="tg-panel" id="tg-panel" hidden aria-live="polite"></aside>
+  </div>
+  <p class="topo-note">Drag to pan · scroll to zoom · click a resource to trace its upstream and downstream path · <kbd>/</kbd> search · <kbd>F</kbd> fit · <kbd>Esc</kbd> close</p>
+ </div>
+</section>
+<section class="page-view" id="page-applications" data-page="applications" hidden>
+ <div class="page-heading"><div><div class="eyebrow">APPLICATION INVENTORY</div><h2>Applications</h2><p>Application groups inferred from Kubernetes workload labels.</p></div><span class="page-chip">READ ONLY</span></div>
+ <div class="section"><h2>Application workloads</h2><select id="apps-ns" onchange="loadApplications()"><option value="">All namespaces</option></select></div>
+ <div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>APPLICATION</th><th>WORKLOADS</th><th>PODS</th><th>READY</th><th>DESIRED</th><th>HEALTH</th></tr></thead><tbody id="apps-rows"></tbody></table></div>
+</section>
+<section class="page-view" id="page-timeline" data-page="timeline" hidden>
+ <div class="page-heading"><div><div class="eyebrow">EVENT STREAM</div><h2>Timeline</h2><p>Chronological Kubernetes events, warnings and resource changes.</p></div><span class="page-chip">KUBERNETES EVENTS</span></div>
+ <div class="section"><h2>Cluster events</h2><select id="timeline-ns" onchange="loadTimeline()"><option value="">All namespaces</option></select><select id="timeline-limit" onchange="loadTimeline()"><option>100</option><option selected>200</option><option>500</option></select></div>
+ <div class="timeline-list" id="timeline-list"></div>
+</section>
+<section class="page-view" id="page-traffic" data-page="traffic" hidden>
+ <div class="page-heading"><div><div class="eyebrow">NETWORK OBSERVABILITY</div><h2>Live Traffic</h2><p>Pod network receive and transmit rates from Prometheus, when available.</p></div><span class="page-chip">METRICS-DEPENDENT</span></div>
+ <div class="grid"><div class="card"><div class="metric-head"><span>RECEIVE RATE</span><span>RX</span></div><div class="metric cyan" id="traffic-rx">—</div><div class="sub">Bytes per second across observed pods</div></div><div class="card"><div class="metric-head"><span>TRANSMIT RATE</span><span>TX</span></div><div class="metric blue" id="traffic-tx">—</div><div class="sub">Bytes per second across observed pods</div></div></div>
+ <div class="section"><h2>Pod network rates</h2><span id="traffic-note">Waiting for Prometheus</span></div><div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>POD</th><th>RECEIVE / SEC</th><th>TRANSMIT / SEC</th></tr></thead><tbody id="traffic-rows"></tbody></table></div>
+</section>
+<section class="page-view" id="page-helm" data-page="helm" hidden>
+ <div class="page-heading"><div><div class="eyebrow">PACKAGE MANAGEMENT</div><h2>Helm</h2><p>Read-only Flux HelmRelease inventory. Native Helm release Secrets are not accessed.</p></div><span class="page-chip">NO MUTATIONS</span></div>
+ <div class="notice" id="helm-note">Checking for Flux HelmRelease resources…</div><div class="card tablewrap"><table><thead><tr><th>NAMESPACE</th><th>RELEASE</th><th>CHART</th><th>VERSION</th><th>READY</th></tr></thead><tbody id="helm-rows"></tbody></table></div>
+</section>
+<section class="page-view" id="page-gitops" data-page="gitops" hidden>
+ <div class="page-heading"><div><div class="eyebrow">CONTINUOUS DELIVERY</div><h2>GitOps</h2><p>Read-only Argo CD and Flux reconciliation status.</p></div><span class="page-chip">NO SYNC ACTIONS</span></div>
+ <div class="notice" id="gitops-note">Discovering supported GitOps resources…</div><div class="card tablewrap"><table><thead><tr><th>PROVIDER</th><th>NAMESPACE</th><th>RESOURCE</th><th>READY</th><th>REVISION</th><th>DETAIL</th></tr></thead><tbody id="gitops-rows"></tbody></table></div>
+</section>
+<section class="page-view" id="page-checks" data-page="checks" hidden>
+ <div class="page-heading"><div><div class="eyebrow">POLICY & HEALTH</div><h2>Checks</h2><p>Read-only health checks derived from node conditions, pod states and deployment readiness.</p></div><span class="page-chip">AUTOMATED</span></div>
+ <div class="grid"><div class="card"><div class="metric-head"><span>PASS</span></div><div class="metric green" id="checks-pass">—</div></div><div class="card"><div class="metric-head"><span>WARN</span></div><div class="metric amber" id="checks-warn">—</div></div><div class="card"><div class="metric-head"><span>FAIL</span></div><div class="metric red" id="checks-fail">—</div></div></div>
+ <div class="card tablewrap"><table><thead><tr><th>STATUS</th><th>SCOPE</th><th>RESOURCE</th><th>CHECK</th><th>DETAIL</th></tr></thead><tbody id="checks-rows"></tbody></table></div>
+</section>
+<section class="page-view" id="page-capacity" data-page="capacity" hidden>
+ <div class="page-heading"><div><div class="eyebrow">RESOURCE PLANNING</div><h2>Capacity</h2><p>Cluster allocatable CPU and memory compared with scheduled workload requests.</p></div><span class="page-chip">REQUESTS VS ALLOCATABLE</span></div>
+ <div class="grid"><div class="card"><div class="metric-head"><span>CPU REQUESTED</span></div><div class="metric cyan" id="capacity-cpu">—</div><div class="sub" id="capacity-cpu-sub">Millicores</div><div class="meter"><i id="capacity-cpu-bar"></i></div></div><div class="card"><div class="metric-head"><span>MEMORY REQUESTED</span></div><div class="metric blue" id="capacity-mem">—</div><div class="sub" id="capacity-mem-sub">Bytes</div><div class="meter blue-meter"><i id="capacity-mem-bar"></i></div></div></div>
+ <div class="notice" id="capacity-note"></div>
+</section>
+<section class="page-view" id="page-cost" data-page="cost" hidden>
+ <div class="page-heading"><div><div class="eyebrow">RESOURCE ECONOMICS</div><h2>Cost</h2><p>Resource consumption indicators. Monetary estimates require an explicitly configured pricing model.</p></div><span class="page-chip">NO FABRICATED PRICES</span></div>
+ <div class="card cost-card"><div class="visual-kicker">ESTIMATED MONTHLY COST</div><div class="metric" id="cost-value">Not configured</div><p id="cost-note">No pricing model configured. Resource requests are shown below without converting them into currency.</p></div>
+ <div class="grid"><div class="card"><div class="metric-head"><span>CPU REQUESTED</span></div><div class="metric cyan" id="cost-cpu">—</div></div><div class="card"><div class="metric-head"><span>MEMORY REQUESTED</span></div><div class="metric blue" id="cost-mem">—</div></div></div>
+</section>
+<div id="incident-drawer" class="drawer-backdrop" onclick="if(event.target===this)closeIncident()">
+ <section class="drawer">
+  <div class="drawer-head"><div><div class="sub">INCIDENT ROOT CAUSE ANALYSIS</div><h2 id="drawer-title">Incident details</h2></div><button class="drawer-close" onclick="closeIncident()">×</button></div>
+  <div id="drawer-content"><p class="empty">Select an incident to inspect its RCA.</p></div>
+ </section>
+</div>
+<footer class="bottom">ClusterPulse AI · Read-only monitoring · AI recommendations require human validation · <span id="footertime"></span></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id), fmt=v=>v==null?'—':v, pct=v=>v==null?'—':Number(v).toFixed(1)+'%';
+async function api(path){const r=await fetch(path,{headers:{'Accept':'application/json'}});if(!r.ok)throw Error(r.status+' '+r.statusText);return r.json()}
+
+/* ===== Click-safety layer =====================================================
+   The dashboard auto-refreshes. Replacing a table/card with innerHTML while the user is pressing
+   a button destroys the element under the pointer, so the browser never fires `click`.
+   stabilize() makes innerHTML assignments (1) a no-op when the markup is unchanged and
+   (2) wait until the pointer is released when the user is mid-click.                         */
+let pointerDownAt=0;const deferredFlush=new Set();
+const isPointerDown=()=>pointerDownAt>0&&Date.now()-pointerDownAt<3000; // stale after 3s (lost pointerup)
+const releasePointer=()=>{pointerDownAt=0;setTimeout(()=>{const fns=[...deferredFlush];deferredFlush.clear();fns.forEach(f=>f())},0)};
+addEventListener('pointerdown',()=>{pointerDownAt=Date.now()},true);
+addEventListener('pointerup',releasePointer,true);addEventListener('pointercancel',releasePointer,true);addEventListener('blur',releasePointer);
+const nativeInnerHTML=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+function stabilize(ids){
+ ids.forEach(id=>{
+  const el=document.getElementById(id);if(!el||el.__stable)return;el.__stable=true;
+  const apply=v=>{el.__want=undefined;deferredFlush.delete(el.__flush);if(el.__html===v)return;el.__html=v;nativeInnerHTML.set.call(el,v)};
+  el.__flush=()=>{if(el.__want!==undefined)apply(el.__want)};
+  Object.defineProperty(el,'innerHTML',{configurable:true,get(){return nativeInnerHTML.get.call(el)},
+   set(v){v=String(v);if(isPointerDown()){el.__want=v;deferredFlush.add(el.__flush);return}apply(v)}});
+ });
+}
+/* Run fn now, or right after the current press is released. */
+function whenIdle(fn){if(isPointerDown()){deferredFlush.add(fn)}else fn()}
+/* Enter / Space activate div[role=button] (keyboard users) */
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[role="button"]:not(button)')){e.preventDefault();e.target.click()}});
+/* <select> options are only rewritten when the list really changed (rewriting closes an open dropdown) */
+function setOptions(el,html){if(!el||el.dataset.sig===html)return;const v=el.value;el.dataset.sig=html;el.innerHTML=html;el.value=v}
+function badge(ok,yes='Ready',no='NotReady'){return `<span class="status ${ok?'ok':'bad'}">${ok?yes:no}</span>`}
+function drawBars(data){const vals=[data.running||0,data.pending||0,(data.failed||0)+(data.unknown||0)],max=Math.max(1,...vals),cols=['#51d6a2','#ffc36a','#ff7185'],labs=['Running','Pending','Failed'];$('podchart').innerHTML=vals.map((v,i)=>`<div class="barcol"><span class="barlabel">${v}</span><div class="bar" style="height:${Math.max(3,v/max*145)}px;background:${cols[i]}"></div><span class="barlabel">${labs[i]}</span></div>`).join('')}
+async function loadOverview(){const d=await api('/api/overview');$('health').textContent=pct(d.health_pct);$('healthsub').textContent=`${d.ready_nodes}/${d.total_nodes} nodes ready · ${d.ready_pods}/${d.total_pods} pods ready`;$('pods').textContent=fmt(d.total_pods);$('podsub').textContent=`${d.running} running · ${d.pending} pending`;$('failed').textContent=fmt(d.unhealthy_pods);$('nodes').textContent=fmt(d.total_nodes);$('nodecount').textContent=`${d.ready_nodes} ready`;$('nodestatus').innerHTML=badge(d.ready_nodes===d.total_nodes,'All nodes ready',`${d.total_nodes-d.ready_nodes} node issue(s)`);$('deploy').textContent=d.deployment_pct==null?'—':pct(d.deployment_pct);$('deploysub').textContent=`${d.available_replicas}/${d.desired_replicas} replicas available`;drawBars(d);$('updated').textContent='Last updated '+new Date().toLocaleTimeString();$('connection').textContent='Live API connected';}
+async function loadMetrics(){try{const d=await api('/api/metrics');$('cpu').textContent=pct(d.cpu_pct);$('memory').textContent=pct(d.memory_pct);$('cpusub').textContent=d.cpu_pct==null?'Prometheus metric unavailable':'Cluster CPU usage';$('memsub').textContent=d.memory_pct==null?'Prometheus metric unavailable':'Cluster memory usage'}catch(e){$('cpusub').textContent='Metrics endpoint unavailable'}}
+
+let incidentData=[],activeIncidentFilter='';
+function filterIncidents(sev){
+ activeIncidentFilter=activeIncidentFilter===sev?'':sev;
+ $('incident-filter').value=activeIncidentFilter;
+ document.querySelectorAll('.severity-card').forEach(c=>c.classList.toggle('selected',c.classList.contains(activeIncidentFilter)));
+ renderIncidents();
+}
+function renderIncidents(){
+ const f=$('incident-filter').value;
+ const openIncidents=incidentData.filter(x=>x.status==='OPEN');
+ const a=f?openIncidents.filter(x=>x.severity===f):openIncidents;
+ $('incident-total').textContent=a.length+' open incidents shown';
+ $('incidentrows').innerHTML=a.length?a.slice(0,50).map(x=>`<tr class="incident-row" onclick="openIncident('${esc(x.id)}')"><td><span class="sev ${esc(x.severity)}">${esc(x.severity)}</span></td><td>${esc(x.namespace)}</td><td>${esc(x.pod_name||'Cluster resource')}</td><td>${esc(x.summary||'')}</td><td>${badge(false,x.status,x.status)}</td><td>${x.occurrences||1}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No open incidents in this severity</td></tr>';
+}
+async function loadIncidents(){
+ const a=await api('/incidents?limit=100');incidentData=a;
+ const open=a.filter(x=>x.status==='OPEN');
+ $('incidents').textContent=open.length;$('incsub').textContent=a.length+' recorded incidents';
+ for(const sev of ['CRITICAL','HIGH','MEDIUM','LOW'])$( 'sev-'+sev.toLowerCase()).textContent=open.filter(x=>x.severity===sev).length;
+ renderIncidents();
+}
+function rcaSection(title,content){
+ return `<div class="rca-block"><h3>${title}</h3>${content||'<p>Not available yet</p>'}</div>`;
+}
+function rcaList(value){
+ return Array.isArray(value)&&value.length?'<ul>'+value.map(x=>'<li>'+esc(typeof x==='string'?x:JSON.stringify(x))+'</li>').join('')+'</ul>':'<p>Not available yet</p>';
+}
+async function openIncident(id){
+ $('drawer-title').textContent='Loading incident…';
+ $('drawer-content').innerHTML='<p class="empty">Loading incident details and RCA…</p>';
+ $('incident-drawer').classList.add('open');
+ try{
+  const x=await api('/incidents/'+encodeURIComponent(id)),r=x.rca||{};
+  $('drawer-title').textContent=(x.severity||'INCIDENT')+' · '+(x.pod_name||x.namespace||'Cluster resource');
+  const whys=Array.isArray(r.five_whys)?'<ol>'+r.five_whys.map(w=>'<li><b>'+esc(w.why||'Why?')+'</b> '+esc(w.answer||'')+'</li>').join('')+'</ol>':'<p>Not available yet</p>';
+  const rcaStatus=x.rca_status||(x.rca?'COMPLETED':'PENDING');
+  const attempts=Number(x.rca_attempts||0);
+  const retryAt=x.rca_next_retry?new Date(x.rca_next_retry).toLocaleString():'Not scheduled';
+  const rcaProgress='<p>Status: <b>'+esc(rcaStatus)+'</b><br>Attempts: '+esc(attempts)+'<br>Next retry: '+esc(retryAt)+'</p>'+
+    (x.rca_last_error?'<p class="danger-text">Last error: '+esc(x.rca_last_error)+'</p>':'');
+  const rootCauseText=r.root_cause||(
+    rcaStatus==='FAILED'?'RCA analysis failed. See processing details for the last error and retry schedule.':
+    rcaStatus==='PROCESSING'?'AI analysis is currently running.':
+    'AI analysis is pending or unavailable.');
+  const closeAction=x.status==='OPEN'
+    ? `<button class="smallbtn danger-btn drawer-close-action" onclick="showClosureForm('${esc(x.id)}')">Close incident</button>`
+    : '<span class="visual-note drawer-closed-note">This incident is closed.</span>';
+  const closureSection=x.status==='CLOSED'
+    ? rcaSection('CLOSURE REMARK', '<p>'+esc(x.closure_remark||'No closure remark was recorded.')+'</p><p class="visual-note">Closed at: '+esc(x.closed_at?new Date(x.closed_at).toLocaleString():'Unknown')+'</p>')
+    : '';
+  $('drawer-content').innerHTML=
+   `<div class="toolbar drawer-status-toolbar"><span class="sev ${esc(x.severity)}">${esc(x.severity)}</span>${badge(x.status!=='OPEN',x.status,x.status)}${badge(x.email_status==='SENT','Email sent',x.email_status||'Email pending')}${badge(rcaStatus==='COMPLETED',rcaStatus,rcaStatus)}<span class="drawer-action-spacer"></span>${closeAction}</div>
+   <div id="closure-form" class="closure-form" hidden><label for="closure-remark">RCA closure remark <span class="danger-text">*</span></label><textarea id="closure-remark" maxlength="5000" rows="4" placeholder="Document the RCA conclusion, corrective action, and reason for closure (minimum 3 characters)"></textarea><div class="closure-form-actions"><button class="smallbtn" onclick="cancelClosureForm()">Cancel</button><button class="smallbtn danger-btn" onclick="submitClosure('${esc(x.id)}')">Save remark &amp; close</button></div></div>
+   ${closureSection}
+   ${rcaSection('RCA PROCESSING DETAILS',rcaProgress)}
+   ${rcaSection('INCIDENT SUMMARY','<p>'+esc(r.incident_summary||x.summary||'')+'</p>')}
+   ${rcaSection('ROOT CAUSE · '+esc(r.confidence||'Confidence pending'),'<p>'+esc(rootCauseText)+'</p>')}
+   ${rcaSection('RESOURCE CONTEXT','<p>Namespace: '+esc(x.namespace)+'<br>Pod: '+esc(x.pod_name)+'<br>Node: '+esc(x.node_name)+'<br>Occurrences: '+esc(x.occurrences)+'</p>')}
+   ${rcaSection('EVIDENCE',rcaList(r.evidence||[]))}
+   ${rcaSection('FIVE WHYS',whys)}
+   ${rcaSection('IMPACT','<p>'+esc(r.impact||'Not available yet')+'</p>')}
+   ${rcaSection('IMMEDIATE ACTIONS',rcaList(r.immediate_actions||[]))}
+   ${rcaSection('PREVENTIVE ACTIONS',rcaList(r.preventive_actions||[]))}
+   ${rcaSection('SUGGESTED KUBECTL COMMANDS',rcaList(r.kubectl_commands||[]))}
+   ${rcaSection('FURTHER INVESTIGATION',rcaList(r.further_investigation||[]))}`;
+ }catch(e){$('drawer-content').innerHTML='<p class="empty">Unable to load incident: '+esc(e.message)+'</p>'}
+}
+function closeIncident(){$('incident-drawer').classList.remove('open')}
+function showClosureForm(id){
+ const form=$('closure-form');
+ if(!form)return;
+ form.hidden=false;
+ $('closure-remark')?.focus();
+}
+function cancelClosureForm(){
+ const form=$('closure-form');
+ if(form)form.hidden=true;
+}
+async function submitClosure(id){
+ const field=$('closure-remark');
+ const remark=(field?.value||'').trim();
+ if(remark.length<3){alert('Please enter an RCA closure remark (at least 3 characters).');field?.focus();return;}
+ if(!confirm('Save this closure remark and close the incident?'))return;
+ try{
+  const response=await fetch('/incidents/'+encodeURIComponent(id)+'/close',{
+   method:'POST',
+   headers:{'Accept':'application/json','Content-Type':'application/json'},
+   body:JSON.stringify({remark})
+  });
+  if(!response.ok){
+   let detail='HTTP '+response.status;
+   try{const body=await response.json();if(body.detail)detail=typeof body.detail==='string'?body.detail:JSON.stringify(body.detail)}catch(_e){}
+   throw new Error(detail);
+  }
+  await loadIncidents();
+  renderRcaDashboard();
+  await openIncident(id);
+ }catch(error){alert('Could not close incident: '+error.message);}
+}
+function goTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+
+
+async function loadNodes(){
+ const a=await api('/api/nodes');
+
+ $('noderows').innerHTML=a.length?a.map(n=>`<tr>
+ <td>${esc(n.name)}</td><td>${badge(n.ready)}</td>
+ <td>${esc(n.cpu||'—')}</td><td>${esc(n.memory||'—')}</td>
+ <td>${badge(!n.disk_pressure,'Normal','Pressure')}</td>
+ <td>${badge(!n.pid_pressure,'Normal','Pressure')}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No node data</td></tr>';
+
+ $('node-live-count').textContent=a.length;
+ $('node-live-ready').textContent=`${a.filter(n=>n.ready).length} of ${a.length} nodes Ready`;
+
+ $('node-orbit').innerHTML =
+ '<div class="orbit-ring"></div><div class="orbit-core">K3S</div>' +
+ (a.length ? a.map(n=>`<div class="live-node-chip ${n.ready?'node-ok':'node-bad'}"><b>${esc(n.name)}</b><small>${n.ready?'READY':'NOT READY'}</small></div>`).join('') : '<div class="visual-note">No nodes returned</div>');
+
+ const conditions=[
+ ['Readiness',n=>n.ready,'Ready','Not Ready'],
+ ['Disk pressure',n=>!n.disk_pressure,'Normal','Pressure'],
+ ['PID pressure',n=>!n.pid_pressure,'Normal','Pressure'],
+ ['Memory pressure',n=>!n.memory_pressure,'Normal','Pressure']
+ ];
+
+ $('node-condition').innerHTML=conditions.map(([label,ok,yes,no])=>{
+ const good=a.filter(n=>ok(n)).length;
+ const bad=a.length-good;
+ return `<div class="condition-line"><span>${label}</span><b class="${bad?'danger-text':'condition-good'}">${a.length?`${good}/${a.length} ${bad?no:yes}`:'No data'}</b></div>`;
+ }).join('');
+
+ $('node-capacity').innerHTML=a.length?a.map(n=>`
+ <div class="condition-line"><span>${esc(n.name)} · CPU</span><b>${esc(n.cpu||'—')}</b></div>
+ <div class="condition-line"><span>${esc(n.name)} · Memory</span><b>${esc(n.memory||'—')}</b></div>`).join(''):'<div class="visual-note">No capacity data</div>';
+}
+
+async function loadWorkloads(){
+ const ns=$('nsfilter').value;
+ const a=await api('/api/workloads'+(ns?'?namespace='+encodeURIComponent(ns):''));
+ const count=kind=>a.filter(w=>w.kind===kind).length;
+ const ready=a.reduce((n,w)=>n+(Number(w.ready)||0),0);
+ const desired=a.reduce((n,w)=>n+(Number(w.desired)||0),0);
+ $('wl-total').textContent=a.length;
+ $('wl-healthy').textContent=ready;
+ $('wl-degraded').textContent=Math.max(0,desired-ready);
+ $('wl-deployments').textContent=count('Deployment');
+ $('wl-statefulsets').textContent=count('StatefulSet');
+ $('wl-daemonsets').textContent=count('DaemonSet');
+ $('wl-replicasets').textContent=count('ReplicaSet');
+ const namespaces=[...new Set(a.map(x=>x.namespace))].sort();
+ const sel=$('nsfilter'),current=sel.value;
+ sel.innerHTML='<option value="">All namespaces</option>'+namespaces.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+ sel.value=current;
+ $('workrows').innerHTML=a.length?a.slice(0,150).map(w=>`<tr><td>${esc(w.namespace)}</td><td>${esc(w.name)}</td><td>${esc(w.kind)}</td><td>${w.ready}</td><td>${w.desired}</td><td>${badge(w.ready>=w.desired,w.ready>=w.desired?'Healthy':'Degraded')}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No workload data</td></tr>';
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+let selectedPod=null,podTimer=null,podsAll=[];
+function debouncedPods(){clearTimeout(podTimer);podTimer=setTimeout(renderPods,150)}
+async function loadPods(){
+ try{podsAll=await api('/api/pods?limit=2000');renderPods();updatePodVisuals()}
+ catch(e){$('podrows').innerHTML=`<tr><td colspan="8" class="empty">${esc(e.message)}</td></tr>`}
+}
+function renderPods(){
+ const q=$('podsearch').value.trim().toLowerCase(),phase=$('podphase').value.toLowerCase();
+ const a=podsAll.filter(p=>(!phase||p.phase.toLowerCase()===phase)&&(!q||`${p.namespace}/${p.name} ${p.node||''}`.toLowerCase().includes(q)));
+ const rows=a.slice(0,500).map(p=>{
+  const condition=p.reason||p.phase;
+  return `<tr><td>${esc(p.namespace)}</td><td>${esc(p.name)}</td><td>${badge(p.phase==='Running',p.phase,p.phase)}</td><td>${p.ready}/${p.containers}</td><td class="${p.restarts?'amber':'green'}">${p.restarts}</td><td>${esc(p.node||'—')}</td><td>${esc(condition||'—')}</td><td><button type="button" class="smallbtn" data-action="pod-logs" data-ns="${esc(p.namespace)}" data-pod="${esc(p.name)}">View logs</button></td></tr>`}).join('');
+ $('podrows').innerHTML=a.length?rows+(a.length>500?`<tr><td colspan="8" class="empty">Showing first 500 of ${a.length} pods — refine the search</td></tr>`:''):'<tr><td colspan="8" class="empty">No matching pods</td></tr>';
+}
+function updatePodVisuals(){
+ const set=(id,v)=>{if($(id))$(id).textContent=v};
+ const total=podsAll.length,run=podsAll.filter(p=>p.phase==='Running').length,pend=podsAll.filter(p=>p.phase==='Pending').length,bad=total-run-pend;
+ set('pod-total-vis',total);set('pod-restart-vis',podsAll.reduce((n,p)=>n+(p.restarts||0),0));
+ set('pod-unhealthy-vis',podsAll.filter(p=>p.phase!=='Running'||p.ready!==p.containers).length);
+ for(const [id,v] of [['pod-running-bar',run],['pod-pending-bar',pend],['pod-failed-bar',bad]])if($(id))$(id).style.width=(total?v/total*100:0)+'%';
+}
+let pendingLogPod=null;
+function openPodLogs(ns,pod){pendingLogPod={namespace:ns,pod};navigateTo('logs')}
+let logPods=[];
+let logPodsSig='';
+async function loadLogsPage(){
+ try{
+  const list=await api('/api/pods?limit=2000'),sig=list.map(p=>p.namespace+'/'+p.name).join('|');
+  logPods=list;
+  if(sig!==logPodsSig||pendingLogPod){
+   logPodsSig=sig;
+   const namespaces=[...new Set(logPods.map(p=>p.namespace))].sort(),ns=$('lognamespace'),previous=ns.value;
+   ns.innerHTML='<option value="">All namespaces</option>'+namespaces.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+   ns.value=namespaces.includes(previous)?previous:'';
+   if(pendingLogPod){
+    const p=pendingLogPod;pendingLogPod=null;ns.value=namespaces.includes(p.namespace)?p.namespace:'';selectedPod=null;filterLogPods();
+    $('logpod').value=p.namespace+'|'+p.pod;
+    if($('logpod').value)selectLogPod();else $('logoutput').textContent='Pod '+p.namespace+'/'+p.pod+' no longer exists.';
+   }else filterLogPods();
+  }
+ }catch(e){$('logoutput').textContent='Unable to load pods: '+e.message}
+}
+function filterLogPods(){
+ const ns=$('lognamespace').value,list=logPods.filter(p=>!ns||p.namespace===ns),pod=$('logpod'),prev=selectedPod;
+ pod.innerHTML='<option value="">Select pod</option>'+list.map(p=>`<option value="${esc(p.namespace)}|${esc(p.name)}">${esc(p.name)}</option>`).join('');
+ const match=prev&&list.find(p=>p.name===prev.pod&&p.namespace===prev.namespace);
+ if(match){pod.value=match.namespace+'|'+match.name}   // same pod: keep streaming, do not reset the view
+ else{
+  selectedPod=null;stopLogPolling();setLogLiveButton();
+  $('logcontainer').innerHTML='<option value="">Default container</option>';
+  $('logtitle').textContent='Choose a pod to inspect its logs';
+  $('logoutput').textContent=list.length?'Select a pod to load its logs.':'No pods found in this namespace.';
+ }
+}
+let logRawLines=[],logLiveTimer=null,logLiveEnabled=true,logCleared=false;
+const logLevels=new Set(['ERR','WARN','INFO','DBG','OTHER']);
+function stopLogPolling(){if(logLiveTimer){clearInterval(logLiveTimer);logLiveTimer=null}}
+function setLogLiveButton(){
+ const b=$('logLiveBtn');if(!b)return;
+ b.textContent=logLiveEnabled?'■ Stop':'▶ Live';
+ b.classList.toggle('live-stop',logLiveEnabled);b.classList.toggle('live-start',!logLiveEnabled);
+ $('logLiveStatus').textContent=selectedPod?(logLiveEnabled?'● LIVE · polling every 2.5s':'Ⅱ PAUSED · manual refresh available'):'LIVE · waiting for pod';
+}
+function startLogPolling(){stopLogPolling();if(logLiveEnabled&&selectedPod&&!$('previousLogs').checked)logLiveTimer=setInterval(()=>{if(!document.hidden&&currentPage==='logs')refreshLogs(true)},2500);setLogLiveButton()}
+function toggleLiveLogs(){logLiveEnabled=!logLiveEnabled;if(logLiveEnabled){refreshLogs();startLogPolling()}else{stopLogPolling();setLogLiveButton()}}
+function togglePreviousLogs(){if($('previousLogs').checked){logLiveEnabled=false;stopLogPolling()}else{logLiveEnabled=true}setLogLiveButton();refreshLogs();startLogPolling()}
+function toggleLogLevel(button){const level=button.dataset.level;if(logLevels.has(level)){logLevels.delete(level);button.classList.remove('active')}else{logLevels.add(level);button.classList.add('active')}renderLogOutput()}
+function classifyLog(line){
+ const s=line.toUpperCase();
+ if(/\b(ERROR|ERR|FATAL|CRITICAL|PANIC)\b/.test(s))return 'ERR';
+ if(/\b(WARN|WARNING)\b/.test(s))return 'WARN';
+ if(/\b(INFO)\b/.test(s))return 'INFO';
+ if(/\b(DEBUG|DBG|TRACE)\b/.test(s))return 'DBG';
+ return 'OTHER';
+}
+function formatLogLine(line){
+ if($('logTimeMode')?.value==='local'){
+  return line.replace(/^(\S+T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)/,(stamp)=>{const d=new Date(stamp);return isNaN(d)?stamp:d.toLocaleString()});
+ }
+ return line;
+}
+function renderLogOutput(){
+ const out=$('logoutput');if(!out)return;
+ out.classList.toggle('compact',$('logCompact')?.checked||false);
+ const query=($('logsearch')?.value||'').trim().toLowerCase();
+ const visible=logRawLines.filter(line=>logLevels.has(classifyLog(line))&&(!query||line.toLowerCase().includes(query)));
+ $('logLineCount').textContent=visible.length+' / '+logRawLines.length+' lines';
+ if(logCleared){out.textContent='View cleared. Refresh to load logs again.';return}
+ out.textContent=visible.map(line=>formatLogLine(line)).join('\n')||'(No matching log lines)';
+}
+function clearLogView(){logRawLines=[];logCleared=true;renderLogOutput()}
+function downloadLogs(){
+ const text=logRawLines.join('\n');
+ const blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='clusterpulse-'+(selectedPod?.pod||'logs')+'.log';a.click();URL.revokeObjectURL(url);
+}
+function selectLogPod(){
+ const value=$('logpod').value;
+ if(!value){selectedPod=null;stopLogPolling();setLogLiveButton();return}
+ const [namespace,...parts]=value.split('|'),name=parts.join('|');
+ const p=logPods.find(x=>x.namespace===namespace&&x.name===name);if(!p)return;
+ selectedPod={namespace,pod:name};const names=p.container_names||[];
+ $('logcontainer').innerHTML='<option value="">Default container</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+ $('logtitle').textContent=namespace+'/'+name;logRawLines=[];logCleared=false;logLiveEnabled=true;
+ refreshLogs();startLogPolling();
+}
+async function refreshLogs(silent=false){
+ if(!selectedPod){if(!silent)$('logoutput').textContent='Choose a pod to inspect logs.';return}
+ const params=new URLSearchParams({namespace:selectedPod.namespace,pod:selectedPod.pod,tail:$('logtail').value,previous:$('previousLogs').checked});
+ if($('logcontainer').value)params.set('container',$('logcontainer').value);
+ if(!silent)$('logLiveStatus').textContent='↻ FETCHING LOGS';
+ const wasAtBottom=$('logoutput').scrollHeight-$('logoutput').scrollTop-$('logoutput').clientHeight<40;
+ try{
+  const d=await api('/api/logs?'+params.toString());
+  const lines=(d.lines||'').split(/\r?\n/).filter(Boolean);
+  logRawLines=lines.slice(-Number($('logtail').value));logCleared=false;renderLogOutput();
+  $('logUpdated').textContent='Updated '+new Date().toLocaleTimeString();
+  if(wasAtBottom)$('logoutput').scrollTop=$('logoutput').scrollHeight;
+  setLogLiveButton();
+ }catch(e){
+  if(!silent)$('logoutput').textContent='Unable to load logs: '+e.message+'\nCheck pod/container status and Kubernetes pods/log RBAC.';
+  $('logLiveStatus').textContent='● LOG FETCH ERROR';
+ }
+}
+function applyTheme(mode){
+ const effective=mode==='system'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):mode;
+ document.body.dataset.theme=effective;
+}
+function setTheme(mode){$('themeMode').value=mode;try{localStorage.setItem('clusterpulse-theme',mode)}catch(e){}applyTheme(mode)}
+(function initTheme(){let mode='system';try{mode=localStorage.getItem('clusterpulse-theme')||'system'}catch(e){}$('themeMode').value=mode;applyTheme(mode);const mq=window.matchMedia('(prefers-color-scheme: light)');mq.addEventListener?.('change',()=>{if($('themeMode').value==='system')applyTheme('system')})})();
+
+
+const nsSelectors=['topology-ns','apps-ns','timeline-ns'];
+let namespaceList=[];
+async function populateNamespaces(){
+ try{
+  const rows=await api('/api/namespaces');namespaceList=rows.map(x=>x.name).sort();
+  const opts='<option value="">All namespaces</option>'+namespaceList.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  nsSelectors.forEach(id=>setOptions($(id),opts));
+  fillGraphNamespaces();
+ }catch(e){console.warn('Namespace list unavailable',e)}
+}
+function fillGraphNamespaces(){
+ const el=$('tg-ns');if(!el)return;
+ const list=[...new Set([...namespaceList,...(GRAPH.ns?[GRAPH.ns]:[])])].sort();   // always contains the open namespace
+ setOptions(el,list.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join(''));
+ if(GRAPH.ns&&el.value!==GRAPH.ns)el.value=GRAPH.ns;
+}
+
+/* ===================== Topology · namespace cards ===================== */
+const TOPO_KINDS={pods:['Pod'],services:['Service'],workloads:['Deployment','StatefulSet','DaemonSet'],ingresses:['Ingress','IngressRoute'],pvcs:['PVC'],config:['ConfigMap','ServiceAccount','Middleware']};
+const TOPO_LABEL={pods:'Pods',services:'Services',workloads:'Workloads',ingresses:'Ingresses',pvcs:'PVCs',config:'Config',resources:'Resources'};
+const TILE_ORDER=['pods','services','workloads','pvcs','ingresses','resources'];
+const topoUI={tab:'ns',sig:null,data:null,expanded:new Set(),detail:null,lastGraphNs:''};
+const healthOf=h=>['ok','warn','bad','neutral'].includes(h)?h:'neutral';
+const hbadge=(h,t)=>`<span class="hbadge ${healthOf(h)}">${esc(t||'—')}</span>`;
+function topoItems(ns,cat){
+ const kinds=cat&&cat!=='resources'?TOPO_KINDS[cat]:null,out=[];
+ Object.entries(topoUI.data?.resources||{}).forEach(([n,items])=>{if(ns&&n!==ns)return;(items||[]).forEach(x=>{if(!kinds||kinds.includes(x.kind))out.push({namespace:n,...x})})});
+ return out;
+}
+function renderTopoDetail(){
+ const d=topoUI.detail;if(!d)return;
+ const rows=topoItems(d.ns,d.cat);
+ $('topology-detail-title').textContent=(TOPO_LABEL[d.cat]||'Resources')+' · '+(d.ns||'All namespaces');
+ $('topology-detail-hint').textContent=rows.length+' matching resources · read-only inventory';
+ $('topology-resource-rows').innerHTML=rows.map(x=>`<tr><td>${esc(x.namespace)}</td><td>${esc(x.kind)}</td><td><b>${esc(x.name)}</b></td><td>${hbadge(x.health,x.status)}</td><td>${esc(x.details||'—')}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No matching resources found.</td></tr>';
+}
+function topoInventoryHTML(ns){
+ return ['workloads','services','pods','ingresses','pvcs','config'].map(cat=>{
+  const items=topoItems(ns,cat);if(!items.length&&cat==='config')return '';
+  return `<div class="topo-group"><h4>${TOPO_LABEL[cat].toUpperCase()} (${items.length})</h4>${items.length?items.map(x=>`<button type="button" class="topo-item" data-action="graph-open" data-ns="${esc(ns)}" data-focus="${esc(x.kind+'/'+ns+'/'+x.name)}" title="Open in resource graph"><span>${esc(x.name)}</span>${hbadge(x.health,x.status)}</button>`).join(''):'<div class="topology-empty">None found</div>'}</div>`;
+ }).join('');
+}
+function topoCardHTML(n){
+ const ns=esc(n.namespace),open=topoUI.expanded.has(n.namespace);
+ const chips=['workloads','services','pods','ingresses','pvcs','config'].filter(k=>k!=='config'||n[k]>0)
+  .map(k=>`<button type="button" class="topo-chip" data-action="topo-category" data-ns="${ns}" data-cat="${k}" title="List ${TOPO_LABEL[k].toLowerCase()} in ${ns}">${n[k]} ${TOPO_LABEL[k].toLowerCase()}</button>`).join('');
+ return `<div class="topology-ns-card${open?' expanded':''}" data-namespace="${ns}"><div class="topology-ns-head"><button type="button" class="topo-ns-title" data-action="graph-open" data-ns="${ns}" title="Open resource graph">⬡ ${ns} <small>· ${n.resources} resources</small></button><div class="topo-card-actions"><button type="button" class="topology-expand" data-action="graph-open" data-ns="${ns}">Graph</button><button type="button" class="topology-expand" data-action="topo-toggle" data-ns="${ns}" aria-expanded="${open}">${open?'Collapse':'Expand'}</button></div></div><div class="topology-counts">${chips}</div><div class="topology-resource-list">${open?topoInventoryHTML(n.namespace):''}</div></div>`;
+}
+function renderTopology(){
+ const d=topoUI.data;if(!d)return;
+ $('topology-warnings').innerHTML=(d.warnings&&d.warnings.length)?`<div class="notice">Some resource kinds were skipped, so the topology may be incomplete:<br>${d.warnings.map(esc).join('<br>')}</div>`:'';
+ $('topology-summary').innerHTML=TILE_ORDER.map(k=>`<button type="button" class="card topology-summary-button" data-action="topo-tile" data-cat="${k}" title="List ${TOPO_LABEL[k].toLowerCase()}"><div class="metric-head"><span>${TOPO_LABEL[k].toUpperCase()}</span><span>↗</span></div><div class="metric cyan">${d.totals[k]??0}</div></button>`).join('');
+ $('topology-groups').innerHTML=d.namespaces.map(topoCardHTML).join('')||'<div class="notice">No namespaces found.</div>';
+ $('topology-edges').innerHTML=d.edges.map(e=>`<tr><td>${esc(e.namespace)}</td><td>${esc(e.from)}</td><td>${esc(e.type)}</td><td>${esc(e.to)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No resource relationships found.</td></tr>';
+ renderTopoDetail();
+}
+function toggleTopoCard(ns,force){
+ const card=[...document.querySelectorAll('.topology-ns-card')].find(c=>c.dataset.namespace===ns);if(!card)return;
+ const open=force===undefined?!topoUI.expanded.has(ns):!!force;
+ open?topoUI.expanded.add(ns):topoUI.expanded.delete(ns);
+ card.classList.toggle('expanded',open);
+ const btn=card.querySelector('[data-action="topo-toggle"]');if(btn){btn.textContent=open?'Collapse':'Expand';btn.setAttribute('aria-expanded',String(open))}
+ card.querySelector('.topology-resource-list').innerHTML=open?topoInventoryHTML(ns):'';
+}
+async function loadTopology(force){
+ const ns=$('topology-ns').value;
+ const d=await api('/api/topology'+(ns?'?namespace='+encodeURIComponent(ns):''));
+ const sig=ns+'|'+d.revision;
+ if(!force&&sig===topoUI.sig)return;      // unchanged: do not touch the DOM (keeps clicks, scroll and expanded cards intact)
+ topoUI.sig=sig;topoUI.data=d;
+ whenIdle(renderTopology);
+}
+
+/* ===================== Topology · resource graph ===================== */
+const KIND_META={Service:{ico:'⇄',label:'SERVICE'},Deployment:{ico:'▲',label:'DEPLOYMENT'},StatefulSet:{ico:'▣',label:'STATEFULSET'},DaemonSet:{ico:'◉',label:'DAEMONSET'},Pod:{ico:'⬡',label:'POD'},PodGroup:{ico:'…',label:'PODS'},PVC:{ico:'▤',label:'PVC'},ConfigMap:{ico:'☰',label:'CONFIGMAP'},ServiceAccount:{ico:'⚇',label:'SERVICE ACCOUNT'},Ingress:{ico:'⇥',label:'INGRESS'},IngressRoute:{ico:'⇥',label:'INGRESSROUTE'},Middleware:{ico:'⧉',label:'MIDDLEWARE'}};
+const KIND_RANK=['Ingress','IngressRoute','Middleware','Service','Deployment','StatefulSet','DaemonSet','PVC','ConfigMap','ServiceAccount','Pod','PodGroup'];
+const EDGE_COLOR={selects:'#4f8cff',routes:'#4f8cff',owns:'#6b7686',mounts:'#d94fa0',config:'#e6a93a',identity:'#e6a93a',middleware:'#e6a93a'};
+const KUBECTL_KIND={Deployment:'deployment',StatefulSet:'statefulset',DaemonSet:'daemonset',Service:'service',Pod:'pod',PVC:'pvc',ConfigMap:'configmap',ServiceAccount:'serviceaccount',Ingress:'ingress',IngressRoute:'ingressroutes.traefik.io',Middleware:'middlewares.traefik.io'};
+const GN={w:210,h:58,gx:96,gy:20,cg:44};
+const GRAPH={ns:'',data:null,rev:null,pos:new Map(),size:null,succ:new Map(),pred:new Map(),view:{x:0,y:0,k:1},selected:null,query:'',
+ hidden:new Set(),paused:false,timer:null,token:0,fitted:false,err:null,lastOk:null,rendered:false};
+try{(JSON.parse(localStorage.getItem('clusterpulse-topo-hidden')||'[]')).forEach(k=>GRAPH.hidden.add(k))}catch(e){}
+
+/* Layered left-to-right layout (Sugiyama-style, dependency-free so it works air-gapped):
+   components stacked vertically -> longest-path layering -> sources pulled next to their consumers
+   -> barycenter ordering to cut edge crossings. Pure function: easy to test. */
+function layoutGraph(nodes,edges){
+ const ids=new Set(nodes.map(n=>n.id)),byId=new Map(nodes.map(n=>[n.id,n]));
+ const E=edges.filter(e=>ids.has(e.source)&&ids.has(e.target)&&e.source!==e.target);
+ const succ=new Map(),pred=new Map(),adj=new Map();
+ nodes.forEach(n=>{succ.set(n.id,[]);pred.set(n.id,[]);adj.set(n.id,[])});
+ E.forEach(e=>{succ.get(e.source).push(e.target);pred.get(e.target).push(e.source);adj.get(e.source).push(e.target);adj.get(e.target).push(e.source)});
+ const rank=id=>{const i=KIND_RANK.indexOf(byId.get(id).kind);return i<0?99:i};
+ const sortStable=(arr,key)=>arr.map((id,i)=>[id,key(id),i]).sort((a,b)=>a[1]-b[1]||a[2]-b[2]).map(x=>x[0]);
+ const seen=new Set(),comps=[];
+ nodes.forEach(n=>{if(seen.has(n.id))return;const stack=[n.id],c=[];seen.add(n.id);while(stack.length){const id=stack.pop();c.push(id);adj.get(id).forEach(x=>{if(!seen.has(x)){seen.add(x);stack.push(x)}})}comps.push(c)});
+ comps.sort((a,b)=>b.length-a.length);
+ const pos=new Map();let yBase=0,width=0;
+ comps.forEach(comp=>{
+  const indeg=new Map(comp.map(id=>[id,pred.get(id).length])),layer=new Map(comp.map(id=>[id,0])),queue=comp.filter(id=>indeg.get(id)===0),done=new Set();
+  while(done.size<comp.length){
+   if(!queue.length){const rest=comp.filter(id=>!done.has(id)).sort((a,b)=>rank(a)-rank(b));queue.push(rest[0])}   // cycle guard
+   const id=queue.shift();if(done.has(id))continue;done.add(id);
+   succ.get(id).forEach(t=>{layer.set(t,Math.max(layer.get(t),layer.get(id)+1));indeg.set(t,indeg.get(t)-1);if(indeg.get(t)<=0&&!done.has(t))queue.push(t)});
+  }
+  for(let pass=0;pass<3;pass++)comp.forEach(id=>{if(!pred.get(id).length&&succ.get(id).length){const m=Math.min(...succ.get(id).map(t=>layer.get(t)))-1;if(m>layer.get(id))layer.set(id,m)}});
+  const used=[...new Set(comp.map(id=>layer.get(id)))].sort((a,b)=>a-b),remap=new Map(used.map((l,i)=>[l,i]));
+  comp.forEach(id=>layer.set(id,remap.get(layer.get(id))));
+  const cols=Array.from({length:used.length},()=>[]);
+  comp.slice().sort((a,b)=>rank(a)-rank(b)||byId.get(a).name.localeCompare(byId.get(b).name)).forEach(id=>cols[layer.get(id)].push(id));
+  const idx=new Map(),reindex=()=>cols.forEach(c=>c.forEach((id,i)=>idx.set(id,i)));reindex();
+  const bary=(id,nb)=>{const a=nb.get(id).filter(x=>idx.has(x));return a.length?a.reduce((s,x)=>s+idx.get(x),0)/a.length:idx.get(id)};
+  for(let it=0;it<4;it++){
+   for(let l=1;l<cols.length;l++){cols[l]=sortStable(cols[l],id=>bary(id,pred));reindex()}
+   for(let l=cols.length-2;l>=0;l--){cols[l]=sortStable(cols[l],id=>bary(id,succ));reindex()}
+  }
+  const colH=cols.map(c=>c.length*GN.h+Math.max(0,c.length-1)*GN.gy),H=Math.max(...colH,GN.h);
+  cols.forEach((c,l)=>{const off=(H-colH[l])/2;c.forEach((id,i)=>pos.set(id,{x:l*(GN.w+GN.gx),y:yBase+off+i*(GN.h+GN.gy)}))});
+  width=Math.max(width,cols.length*(GN.w+GN.gx)-GN.gx);yBase+=H+GN.cg;
+ });
+ return {pos,width,height:Math.max(0,yBase-GN.cg)};
+}
+function edgePath(a,b){
+ const x1=a.x+GN.w,y1=a.y+GN.h/2,x2=b.x,y2=b.y+GN.h/2;
+ if(x2<=x1+4)return `M${x1},${y1} C${x1+70},${y1} ${x2-70},${y2} ${x2},${y2}`;
+ if(Math.abs(y2-y1)<1)return `M${x1},${y1} H${x2}`;
+ const xm=x2-GN.gx/2,r=Math.min(9,Math.abs(y2-y1)/2,(xm-x1)/2),d=y2>y1?1:-1;
+ return `M${x1},${y1} H${xm-r} Q${xm},${y1} ${xm},${y1+d*r} V${y2-d*r} Q${xm},${y2} ${xm+r},${y2} H${x2}`;
+}
+function graphVisible(){
+ const d=GRAPH.data,nodes=d.nodes.filter(n=>!GRAPH.hidden.has(n.kind)),ids=new Set(nodes.map(n=>n.id));
+ return {nodes,edges:d.edges.filter(e=>ids.has(e.source)&&ids.has(e.target))};
+}
+function nodeHTML(n,p){
+ const km=KIND_META[n.kind]||{ico:'•',label:n.kind.toUpperCase()};
+ return `<div class="tg-node health-${healthOf(n.health)}${n.ghost?' ghost':''}" role="button" tabindex="0" data-action="graph-node" data-id="${esc(n.id)}" style="left:${p.x}px;top:${p.y}px" title="${esc(n.kind+' · '+n.name+(n.status?' · '+n.status:''))}" aria-label="${esc(n.kind+' '+n.name+', '+(n.status||''))}"><div class="tg-kind"><span class="tg-ico">${km.ico}</span>${km.label}<i class="tg-dot"></i></div><div class="tg-name">${esc(n.name)}</div><div class="tg-sub">${esc(n.status||'')}</div></div>`;
+}
+function renderKindChips(){
+ const counts={};GRAPH.data.nodes.forEach(n=>counts[n.kind]=(counts[n.kind]||0)+1);
+ $('tg-kinds').innerHTML=KIND_RANK.filter(k=>counts[k]).map(k=>`<button type="button" class="tg-kind-chip${GRAPH.hidden.has(k)?' off':''}" data-action="graph-kind" data-kind="${k}" aria-pressed="${!GRAPH.hidden.has(k)}"><b>${counts[k]}</b> ${esc((KIND_META[k]||{label:k}).label.toLowerCase())}</button>`).join('');
+}
+function showGraphEmpty(msg){const el=$('tg-empty');el.textContent=msg;el.hidden=false;$('tg-nodes').innerHTML='';$('tg-edges').innerHTML=''}
+function renderGraph(fit){
+ if(!GRAPH.data)return;
+ renderKindChips();
+ const {nodes,edges}=graphVisible();
+ GRAPH.succ=new Map();GRAPH.pred=new Map();
+ nodes.forEach(n=>{GRAPH.succ.set(n.id,[]);GRAPH.pred.set(n.id,[])});
+ edges.forEach(e=>{GRAPH.succ.get(e.source).push(e.target);GRAPH.pred.get(e.target).push(e.source)});
+ if(!nodes.length){showGraphEmpty(GRAPH.data.nodes.length?'All resource kinds are hidden. Re-enable a kind above.':'No resources found in namespace “'+GRAPH.ns+'”.');GRAPH.size=null;updateGraphStatus();return}
+ $('tg-empty').hidden=true;
+ const L=layoutGraph(nodes,edges);GRAPH.pos=L.pos;GRAPH.size=L;
+ const types=[...new Set(edges.map(e=>e.type))];
+ const defs='<defs>'+types.map(t=>`<marker id="ah-${t}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="${EDGE_COLOR[t]||'#6b7686'}"/></marker>`).join('')+'</defs>';
+ const paths=edges.map(e=>`<path class="tg-edge e-${esc(e.type)}" data-s="${esc(e.source)}" data-t="${esc(e.target)}" marker-end="url(#ah-${esc(e.type)})" d="${edgePath(L.pos.get(e.source),L.pos.get(e.target))}"><title>${esc(e.type)}</title></path>`).join('');
+ const nodesHtml=nodes.map(n=>nodeHTML(n,L.pos.get(n.id))).join('');
+ const paint=()=>{
+  const svg=$('tg-edges');svg.setAttribute('width',L.width+4);svg.setAttribute('height',L.height+4);
+  svg.innerHTML=defs+paths;$('tg-nodes').innerHTML=nodesHtml;
+  if(GRAPH.selected&&!GRAPH.pos.has(GRAPH.selected)){GRAPH.selected=null;closeGraphPanel()}else if(GRAPH.selected)openGraphPanel(GRAPH.selected);
+  applyGraphHighlight();
+  if(fit)fitGraph();
+  GRAPH.rendered=true;updateGraphStatus();
+ };
+ GRAPH.rendered?whenIdle(paint):paint();   // never swap the DOM under a pressed pointer
+}
+function applyView(){const v=GRAPH.view;$('tg-viewport').style.transform=`translate(${v.x}px,${v.y}px) scale(${v.k})`}
+function fitGraph(){
+ const st=$('tg-stage'),W=st.clientWidth,H=st.clientHeight;if(!W||!H||!GRAPH.size)return;
+ const pad=70,w=GRAPH.size.width+2,h=GRAPH.size.height+2,kw=(W-pad)/w,kh=(H-pad)/h;let k=Math.min(kw,kh,1.1),x,y;
+ if(k<.5&&kw>k){k=Math.max(k,Math.min(kw,.7));x=(W-w*k)/2;y=28}else{x=(W-w*k)/2;y=(H-h*k)/2}   // very tall graph: fit width, start at top
+ GRAPH.view={k:Math.max(.15,k),x,y};applyView();GRAPH.fitted=true;
+}
+function zoomAt(cx,cy,f){
+ const r=$('tg-stage').getBoundingClientRect(),px=cx-r.left,py=cy-r.top,v=GRAPH.view,k=Math.min(2.5,Math.max(.15,v.k*f)),q=k/v.k;
+ v.x=px-(px-v.x)*q;v.y=py-(py-v.y)*q;v.k=k;applyView();
+}
+function zoomBy(f){const r=$('tg-stage').getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,f)}
+function centerOnNode(id){
+ const p=GRAPH.pos.get(id);if(!p)return;const st=$('tg-stage'),k=Math.max(GRAPH.view.k,.8);
+ GRAPH.view={k,x:st.clientWidth/2-(p.x+GN.w/2)*k,y:st.clientHeight/2-(p.y+GN.h/2)*k};applyView();
+}
+function traceSet(id){
+ const out=new Set([id]);
+ const walk=(map)=>{const q=[id];while(q.length){const cur=q.pop();(map.get(cur)||[]).forEach(n=>{if(!out.has(n)){out.add(n);q.push(n)}})}};
+ walk(GRAPH.succ);walk(GRAPH.pred);return out;
+}
+function applyGraphHighlight(){
+ if(!GRAPH.data)return;
+ const q=GRAPH.query,sel=GRAPH.selected,trace=sel&&GRAPH.pos.has(sel)?traceSet(sel):null;
+ const matches=q?new Set(GRAPH.data.nodes.filter(n=>`${n.kind} ${n.name} ${n.status} ${n.detail}`.toLowerCase().includes(q)).map(n=>n.id)):null;
+ document.querySelectorAll('#tg-nodes .tg-node').forEach(el=>{
+  const id=el.dataset.id;el.classList.toggle('sel',id===sel);el.classList.toggle('match',!!matches&&matches.has(id));
+  el.classList.toggle('dim',trace?!trace.has(id):(matches?!matches.has(id):false));
+ });
+ document.querySelectorAll('#tg-edges .tg-edge').forEach(el=>{
+  const s=el.dataset.s,t=el.dataset.t;
+  el.classList.toggle('hl',!!trace&&trace.has(s)&&trace.has(t));
+  el.classList.toggle('dim',trace?!(trace.has(s)&&trace.has(t)):(matches?!(matches.has(s)&&matches.has(t)):false));
+ });
+ updateGraphStatus(matches);
+}
+function updateGraphStatus(matches){
+ if(!GRAPH.data)return;
+ const d=GRAPH.data,{nodes,edges}=GRAPH.size?graphVisible():{nodes:[],edges:[]};
+ let t=`${nodes.length} resources · ${edges.length} relationships`;
+ if(matches)t+=` · ${matches.size} match${matches.size===1?'':'es'}`;
+ if(d.truncated)t+=' · truncated (namespace too large)';
+ if(d.warnings&&d.warnings.length)t+=' · '+d.warnings.length+' kind(s) skipped';
+ if(GRAPH.lastOk)t+=' · updated '+GRAPH.lastOk.toLocaleTimeString();
+ $('tg-status').textContent=t;
+ $('tg-status').title=(d.warnings||[]).join('\n');
+}
+function setGraphLive(){
+ const el=$('tg-live'),txt=$('tg-live-text');
+ el.classList.toggle('error',!!GRAPH.err);el.classList.toggle('paused',!GRAPH.err&&GRAPH.paused);
+ txt.textContent=GRAPH.err?'Disconnected · retrying':(GRAPH.paused?'Paused':'Auto-updating');
+ $('tg-pause').textContent=GRAPH.paused?'Resume':'Pause';
+}
+async function loadGraph(){
+ const ns=GRAPH.ns;if(!ns)return;const token=++GRAPH.token;
+ try{
+  const d=await api('/api/topology/graph?namespace='+encodeURIComponent(ns));
+  if(token!==GRAPH.token||ns!==GRAPH.ns)return;                 // a newer request / namespace switch won
+  GRAPH.err=null;GRAPH.lastOk=new Date();setGraphLive();
+  if(d.revision===GRAPH.rev){updateGraphStatus();return}          // nothing changed: leave the DOM alone
+  GRAPH.rev=d.revision;GRAPH.data=d;renderGraph(!GRAPH.fitted);
+ }catch(e){
+  if(token!==GRAPH.token)return;GRAPH.err=e.message;setGraphLive();
+  if(!GRAPH.data)showGraphEmpty('Unable to load topology: '+e.message);
+ }
+}
+function startGraphTimer(){stopGraphTimer();GRAPH.timer=setInterval(()=>{if(!GRAPH.paused&&!document.hidden&&currentPage==='topology'&&topoUI.tab==='graph')loadGraph()},10000)}
+function stopGraphTimer(){if(GRAPH.timer){clearInterval(GRAPH.timer);GRAPH.timer=null}}
+function toggleGraphPause(){GRAPH.paused=!GRAPH.paused;setGraphLive();if(!GRAPH.paused)loadGraph()}
+function toggleGraphKind(kind){GRAPH.hidden.has(kind)?GRAPH.hidden.delete(kind):GRAPH.hidden.add(kind);try{localStorage.setItem('clusterpulse-topo-hidden',JSON.stringify([...GRAPH.hidden]))}catch(e){}GRAPH.fitted=false;renderGraph(true)}
+function revealNode(id){   // keep the selected node clear of the details panel
+ const p=GRAPH.pos.get(id);if(!p)return;const st=$('tg-stage'),v=GRAPH.view,panelW=0;
+ const left=p.x*v.k+v.x,right=(p.x+GN.w)*v.k+v.x,limit=st.clientWidth-panelW-24;
+ if(right>limit)v.x-=right-limit;if(p.x*v.k+v.x<16)v.x+=16-(p.x*v.k+v.x);
+ const top=p.y*v.k+v.y,bottom=(p.y+GN.h)*v.k+v.y;if(top<16)v.y+=16-top;else if(bottom>st.clientHeight-16)v.y-=bottom-(st.clientHeight-16);
+ applyView();
+}
+function selectGraphNode(id,opts={}){GRAPH.selected=id;applyGraphHighlight();openGraphPanel(id);if(opts.center)centerOnNode(id);else revealNode(id)}
+function closeGraphPanel(){$('tg-panel').hidden=true}
+function clearGraphSelection(){GRAPH.selected=null;closeGraphPanel();applyGraphHighlight()}
+function openGraphPanel(id){
+ const n=GRAPH.data&&GRAPH.data.nodes.find(x=>x.id===id);if(!n)return;
+ const km=KIND_META[n.kind]||{ico:'•',label:n.kind.toUpperCase()},byId=new Map(GRAPH.data.nodes.map(x=>[x.id,x]));
+ const rel=(list,title)=>list&&list.length?`<h4>${title}</h4>`+list.map(i=>{const o=byId.get(i);return o?`<button type="button" class="tg-rel" data-action="graph-select" data-id="${esc(i)}"><span>${esc(o.kind)} · ${esc(o.name)}</span>${hbadge(o.health,o.status)}</button>`:''}).join(''):'';
+ const meta=Object.entries(n.meta||{}).filter(([k,v])=>v!==null&&v!==''&&!(Array.isArray(v)&&!v.length)&&k!=='owner').map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(Array.isArray(v)?v.join(', '):(typeof v==='object'?JSON.stringify(v):v))}</dd>`).join('');
+ const canKubectl=!n.ghost&&KUBECTL_KIND[n.kind],cmd=canKubectl?`kubectl -n ${n.namespace} get ${KUBECTL_KIND[n.kind]} ${n.name} -o yaml`:'';
+ $('tg-panel').innerHTML=`<button type="button" class="tg-close smallbtn" data-action="graph-close-panel" aria-label="Close details">✕</button><div class="tg-kind"><span class="tg-ico">${km.ico}</span>${km.label}</div><h3>${esc(n.name)}</h3><div>${hbadge(n.health,n.status)}</div><dl><dt>namespace</dt><dd>${esc(n.namespace)}</dd>${n.detail?`<dt>details</dt><dd>${esc(n.detail)}</dd>`:''}${meta}</dl>${n.ghost?'<div class="notice">This object is referenced by a workload or route but does not exist. This is a common cause of FailedMount and 503/404 errors.</div>':''}<div class="tg-panel-actions">${n.kind==='Pod'?`<button type="button" class="smallbtn" data-action="pod-logs" data-ns="${esc(n.namespace)}" data-pod="${esc(n.name)}">View logs</button>`:''}${cmd?`<button type="button" class="smallbtn" data-action="copy-text" data-text="${esc(cmd)}">Copy kubectl get</button>`:''}</div>${rel(GRAPH.pred.get(id),'UPSTREAM')}${rel(GRAPH.succ.get(id),'DOWNSTREAM')}`;
+ $('tg-panel').hidden=false;
+}
+function copyText(text,btn){
+ const done=()=>{if(btn){const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=o,1400)}};
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done,()=>{});
+ else{const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){}t.remove()}
+}
+function exportGraph(){
+ if(!GRAPH.data)return;
+ const blob=new Blob([JSON.stringify(GRAPH.data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='topology-'+GRAPH.ns+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function defaultGraphNamespace(){
+ if(topoUI.lastGraphNs)return topoUI.lastGraphNs;
+ if(topoUI.data&&topoUI.data.namespaces.length)return [...topoUI.data.namespaces].sort((a,b)=>b.resources-a.resources)[0].namespace;
+ if(!namespaceList.length)await populateNamespaces();
+ return namespaceList[0]||'';
+}
+async function openGraph(ns,opts={}){
+ if(!ns)ns=await defaultGraphNamespace();
+ setTopoTab('graph',{keepRoute:true});
+ if(!ns){showGraphEmpty('No namespaces available.');return}
+ if(ns!==GRAPH.ns){
+  Object.assign(GRAPH,{ns,data:null,rev:null,selected:null,fitted:false,err:null,query:'',rendered:false,size:null});
+  $('tg-search').value='';closeGraphPanel();$('tg-nodes').innerHTML='';$('tg-edges').innerHTML='';$('tg-empty').hidden=true;
+ }
+ topoUI.lastGraphNs=ns;routeArg=ns;fillGraphNamespaces();setGraphLive();
+ history.replaceState(null,'','#topology/'+encodeURIComponent(ns));
+ startGraphTimer();
+ await loadGraph();
+ if(opts.focus&&GRAPH.data&&GRAPH.data.nodes.some(n=>n.id===opts.focus))selectGraphNode(opts.focus,{center:true});
+}
+function setTopoTab(tab,opts={}){
+ topoUI.tab=tab;
+ $('topo-view-ns').hidden=tab!=='ns';$('topo-view-graph').hidden=tab!=='graph';
+ [['ns','topo-tab-ns'],['graph','topo-tab-graph']].forEach(([t,id])=>{$(id).classList.toggle('active',t===tab);$(id).setAttribute('aria-selected',String(t===tab))});
+ if(tab==='ns'){stopGraphTimer();routeArg='';history.replaceState(null,'','#topology');loadTopology().catch(console.error)}
+ else if(!opts.keepRoute)openGraph('').catch(console.error);
+ else requestAnimationFrame(()=>{if(GRAPH.data&&!GRAPH.fitted)fitGraph()});
+}
+async function topologyRoute(){
+ if(routeArg&&(GRAPH.ns!==routeArg||topoUI.tab!=='graph'))return openGraph(routeArg);
+ if(topoUI.tab==='graph'){if(!GRAPH.data)return loadGraph();return}   // graph refreshes itself every 10s
+ return loadTopology();
+}
+/* graph interactions: pan, wheel zoom, search, keyboard */
+(function initGraphInteractions(){
+ const st=$('tg-stage');let drag=null;
+ st.addEventListener('pointerdown',e=>{
+  if(e.button!==0||e.target.closest('.tg-node,.tg-controls,.tg-panel'))return;
+  drag={x:e.clientX,y:e.clientY,vx:GRAPH.view.x,vy:GRAPH.view.y,moved:false};
+  try{st.setPointerCapture(e.pointerId)}catch(_e){}
+ });
+ st.addEventListener('pointermove',e=>{
+  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(!drag.moved&&Math.hypot(dx,dy)>3){drag.moved=true;st.classList.add('panning')}
+  if(drag.moved){GRAPH.view.x=drag.vx+dx;GRAPH.view.y=drag.vy+dy;applyView()}
+ });
+ const end=e=>{if(!drag)return;const was=drag;drag=null;st.classList.remove('panning');try{st.releasePointerCapture(e.pointerId)}catch(_e){}if(!was.moved&&e.type==='pointerup'&&GRAPH.selected)clearGraphSelection()};
+ st.addEventListener('pointerup',end);st.addEventListener('pointercancel',end);
+ st.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*(e.ctrlKey?.01:.0016)))},{passive:false});
+ $('tg-search').addEventListener('input',e=>{GRAPH.query=e.target.value.trim().toLowerCase();applyGraphHighlight()});
+ $('tg-search').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&GRAPH.query&&GRAPH.data){const m=GRAPH.data.nodes.find(n=>GRAPH.pos.has(n.id)&&`${n.kind} ${n.name} ${n.status} ${n.detail}`.toLowerCase().includes(GRAPH.query));if(m)selectGraphNode(m.id,{center:true})}
+  if(e.key==='Escape'){e.target.value='';GRAPH.query='';applyGraphHighlight();e.target.blur()}
+ });
+ let resizeT;addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>{if(currentPage==='topology'&&topoUI.tab==='graph'&&!GRAPH.selected)fitGraph()},200)});
+ document.addEventListener('keydown',e=>{
+  if(currentPage!=='topology'||topoUI.tab!=='graph'||e.metaKey||e.ctrlKey||e.altKey)return;
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement&&document.activeElement.tagName);
+  if(e.key==='/'&&!typing){e.preventDefault();$('tg-search').focus()}
+  else if((e.key==='f'||e.key==='F')&&!typing)fitGraph();
+  else if(e.key==='Escape'&&!typing&&GRAPH.selected)clearGraphSelection();
+ });
+ if(window.ResizeObserver)new ResizeObserver(()=>{if(GRAPH.data&&!GRAPH.fitted&&$('tg-stage').clientWidth)fitGraph()}).observe(st);
+ document.addEventListener('change',e=>{if(e.target.id==='tg-ns'&&e.target.value)openGraph(e.target.value).catch(console.error)});
+})();
+
+/* One delegated click handler for every data-action (survives re-renders; no inline JS with escaped strings). */
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-action]');if(!el)return;const d=el.dataset;
+ switch(d.action){
+  case 'topo-tab':setTopoTab(d.tab);break;
+  case 'topo-toggle':toggleTopoCard(d.ns);break;
+  case 'topo-expand-all':document.querySelectorAll('.topology-ns-card').forEach(c=>toggleTopoCard(c.dataset.namespace,true));break;
+  case 'topo-collapse-all':document.querySelectorAll('.topology-ns-card').forEach(c=>toggleTopoCard(c.dataset.namespace,false));break;
+  case 'topo-category':topoUI.detail={ns:d.ns,cat:d.cat};toggleTopoCard(d.ns,true);renderTopoDetail();$('topology-detail-title').scrollIntoView({behavior:'smooth',block:'nearest'});break;
+  case 'topo-tile':topoUI.detail={ns:'',cat:d.cat};renderTopoDetail();$('topology-detail-title').scrollIntoView({behavior:'smooth',block:'nearest'});break;
+  case 'graph-open':openGraph(d.ns,{focus:d.focus}).catch(console.error);break;
+  case 'graph-back':setTopoTab('ns');break;
+  case 'graph-pause':toggleGraphPause();break;
+  case 'graph-zoom-in':zoomBy(1.25);break;
+  case 'graph-zoom-out':zoomBy(0.8);break;
+  case 'graph-fit':fitGraph();break;
+  case 'graph-export':exportGraph();break;
+  case 'graph-kind':toggleGraphKind(d.kind);break;
+  case 'graph-node':selectGraphNode(d.id);break;
+  case 'graph-select':selectGraphNode(d.id,{center:true});break;
+  case 'graph-close-panel':clearGraphSelection();break;
+  case 'copy-text':copyText(d.text,el);break;
+  case 'pod-logs':openPodLogs(d.ns,d.pod);break;
+ }
+});
+async function loadApplications(){const ns=$('apps-ns').value;const d=await api('/api/applications'+(ns?'?namespace='+encodeURIComponent(ns):''));$('apps-rows').innerHTML=d.map(a=>`<tr><td>${esc(a.namespace)}</td><td><b>${esc(a.name)}</b></td><td>${a.workloads.map(w=>esc(w.kind)+': '+esc(w.name)).join('<br>')}</td><td>${a.pods}</td><td>${a.ready}</td><td>${a.desired}</td><td>${badge(a.ready>=a.desired,'Healthy','Degraded')}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No labeled Deployment or StatefulSet applications found.</td></tr>'}
+async function loadTimeline(){const ns=$('timeline-ns').value,limit=$('timeline-limit').value;const d=await api('/api/timeline?limit='+limit+(ns?'&namespace='+encodeURIComponent(ns):''));$('timeline-list').innerHTML=d.map(e=>`<div class="timeline-event"><time>${e.time?new Date(e.time).toLocaleString():'Time unavailable'}</time><b class="${e.type==='Warning'?'status-fail':'status-pass'}">${esc(e.type)}</b><div><b>${esc(e.reason)}</b><div class="visual-note">${esc(e.namespace)} · ${esc(e.object)} · x${e.count}</div></div><p>${esc(e.message)}</p></div>`).join('')||'<div class="notice">No Kubernetes events returned.</div>'}
+function humanRate(n){if(n==null)return '—';const units=['B/s','KB/s','MB/s','GB/s'];let i=0;while(n>=1024&&i<3){n/=1024;i++}return n.toFixed(1)+' '+units[i]}
+async function loadTraffic(){const d=await api('/api/traffic');if(!d.configured){$('traffic-note').textContent=d.note;$('traffic-rows').innerHTML='<tr><td colspan="4" class="empty">Prometheus network metrics are not configured.</td></tr>';return}const rx=d.receive_bytes_per_second||[],tx=d.transmit_bytes_per_second||[],m={};rx.forEach(x=>{const k=(x.metric.namespace||'')+'/'+(x.metric.pod||'');m[k]=m[k]||{rx:0,tx:0};m[k].rx=x.value});tx.forEach(x=>{const k=(x.metric.namespace||'')+'/'+(x.metric.pod||'');m[k]=m[k]||{rx:0,tx:0};m[k].tx=x.value});$('traffic-rx').textContent=humanRate(rx.reduce((a,x)=>a+x.value,0));$('traffic-tx').textContent=humanRate(tx.reduce((a,x)=>a+x.value,0));$('traffic-note').textContent='Prometheus sample · refreshed with dashboard polling';$('traffic-rows').innerHTML=Object.entries(m).map(([k,v])=>`<tr><td>${esc(k.split('/')[0])}</td><td>${esc(k.split('/').slice(1).join('/'))}</td><td>${humanRate(v.rx)}</td><td>${humanRate(v.tx)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No network series returned. Ensure cAdvisor exports container network metrics.</td></tr>'}
+async function loadHelm(){const d=await api('/api/helm');$('helm-note').textContent=d.note||'Flux HelmRelease resources are visible below. Native Helm releases are not queried.';$('helm-rows').innerHTML=d.items.map(x=>`<tr><td>${esc(x.namespace)}</td><td>${esc(x.name)}</td><td>${esc(x.chart||'—')}</td><td>${esc(x.version||'—')}</td><td>${badge(x.ready)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No Flux HelmRelease objects found.</td></tr>'}
+async function loadGitops(){const d=await api('/api/gitops');$('gitops-note').textContent=d.note||'Discovered supported GitOps resources.';$('gitops-rows').innerHTML=d.items.map(x=>`<tr><td>${esc(x.provider)}</td><td>${esc(x.namespace)}</td><td>${esc(x.name)}</td><td>${x.ready==null?'Unknown':badge(x.ready)}</td><td>${esc(x.revision||'—')}</td><td>${esc(x.message||x.reason||'—')}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">No supported GitOps resources found.</td></tr>'}
+async function loadChecks(){const d=await api('/api/checks');$('checks-pass').textContent=d.summary.PASS;$('checks-warn').textContent=d.summary.WARN;$('checks-fail').textContent=d.summary.FAIL;$('checks-rows').innerHTML=d.checks.map(x=>`<tr><td class="status-${x.status.toLowerCase()}">${x.status}</td><td>${esc(x.scope)}</td><td>${esc(x.resource)}</td><td>${esc(x.check)}</td><td>${esc(x.message)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No check results.</td></tr>'}
+function fmtBytes(n){if(n==null)return '—';const u=['B','KiB','MiB','GiB','TiB'];let i=0;while(n>=1024&&i<4){n/=1024;i++}return n.toFixed(1)+' '+u[i]}
+async function loadCapacity(){const d=await api('/api/capacity');$('capacity-cpu').textContent=d.cpu_millicores.requested.toLocaleString()+' mCPU';$('capacity-cpu-sub').textContent=`of ${d.cpu_millicores.allocatable.toLocaleString()} mCPU allocatable · ${d.cpu_millicores.pct??'—'}% requested`;$('capacity-cpu-bar').style.width=(d.cpu_millicores.pct||0)+'%';$('capacity-mem').textContent=fmtBytes(d.memory_bytes.requested);$('capacity-mem-sub').textContent=`of ${fmtBytes(d.memory_bytes.allocatable)} allocatable · ${d.memory_bytes.pct??'—'}% requested`;$('capacity-mem-bar').style.width=(d.memory_bytes.pct||0)+'%';$('capacity-note').textContent=d.note+' These figures represent requests, not real-time usage.'}
+async function loadCost(){const d=await api('/api/cost');$('cost-value').textContent=d.pricing_configured?'Pricing model configured':'Not configured';$('cost-note').textContent=d.note;$('cost-cpu').textContent=d.cpu_requested_millicores.toLocaleString()+' mCPU';$('cost-mem').textContent=fmtBytes(d.memory_requested_bytes)}
+
+let currentPage='overview',routeArg='';
+function navigateTo(target){
+ let [page,...rest]=String(target||'overview').split('/');let arg='';try{arg=decodeURIComponent(rest.join('/'))}catch(e){}
+ const allowed=['overview','incidents','nodes','workloads','pods','logs','rca','topology','applications','timeline','traffic','helm','gitops','checks','capacity','cost'];
+ if(!allowed.includes(page)){page='overview';arg=''}
+ currentPage=page;routeArg=arg;
+ document.querySelectorAll('.page-view').forEach(v=>{v.hidden=v.dataset.page!==page});
+ document.querySelectorAll('.side-link[data-page]').forEach(a=>a.classList.toggle('active',a.dataset.page===page));
+ history.replaceState(null,'','#'+page+(arg?'/'+encodeURIComponent(arg):''));
+ if(page!=='topology')stopGraphTimer();
+ if(page!=='logs')stopLogPolling();else if(selectedPod)startLogPolling();
+ refreshCurrentPage();
+}
+async function refreshCurrentPage(){
+ try{
+  if(currentPage==='overview'){await Promise.all([loadOverview(),loadMetrics(),loadIncidents()]);}
+  else if(currentPage==='incidents'){await loadIncidents();}
+  else if(currentPage==='nodes'){await loadNodes();}
+  else if(currentPage==='workloads'){await loadWorkloads();}
+  else if(currentPage==='pods'){await loadPods();}
+  else if(currentPage==='logs'){await loadLogsPage();}
+  else if(currentPage==='rca'){await loadIncidents();renderRcaDashboard();}
+  else if(currentPage==='topology'){await populateNamespaces();await topologyRoute();}
+  else if(currentPage==='applications'){await populateNamespaces();await loadApplications();}
+  else if(currentPage==='timeline'){await populateNamespaces();await loadTimeline();}
+  else if(currentPage==='traffic'){await loadTraffic();}
+  else if(currentPage==='helm'){await loadHelm();}
+  else if(currentPage==='gitops'){await loadGitops();}
+  else if(currentPage==='checks'){await loadChecks();}
+  else if(currentPage==='capacity'){await loadCapacity();}
+  else if(currentPage==='cost'){await loadCost();}
+  $('footertime').textContent=new Date().toLocaleString();
+ }catch(e){$('connection').textContent='API error';console.error(e)}
+}
+function renderRcaDashboard(){
+ const a=incidentData||[];
+ const status=x=>x.rca_status||(x.rca?'COMPLETED':'PENDING');
+ const withRca=a.filter(x=>status(x)==='COMPLETED'&&x.rca);
+ const pending=a.filter(x=>['PENDING','PROCESSING'].includes(status(x)));
+ const failed=a.filter(x=>status(x)==='FAILED');
+
+ $('rca-count').textContent=withRca.length;
+ $('rca-pending').textContent=pending.length;
+ $('rca-emailed').textContent=a.filter(x=>x.email_status==='SENT').length;
+ $('rca-open').textContent=a.filter(x=>x.status==='OPEN').length;
+
+ const openIncidents=a.filter(x=>x.status==='OPEN');
+ $('rca-rows').innerHTML=openIncidents.length?openIncidents.slice(0,100).map(x=>{
+   const r=x.rca||{};
+   const st=status(x);
+   const labels={
+     COMPLETED:'Analysis ready',
+     PROCESSING:'Analyzing',
+     PENDING:'Pending',
+     FAILED:'Failed'
+   };
+   const retry=x.rca_next_retry
+     ? ' · Retry '+new Date(x.rca_next_retry).toLocaleString()
+     : '';
+   const attempts=Number(x.rca_attempts||0);
+   const detail=st==='FAILED'
+     ? 'Attempt '+attempts+(retry||' · Retry unavailable')
+     : st==='PROCESSING'
+       ? 'Attempt '+attempts
+       : st==='PENDING'
+         ? 'Awaiting analysis'
+         : 'Completed';
+   return `<tr class="incident-row" onclick="openIncident('${esc(x.id)}')">
+     <td><span class="sev ${esc(x.severity)}">${esc(x.severity)}</span></td>
+     <td>${esc(x.pod_name||x.namespace||'Cluster resource')}</td>
+     <td>${esc(x.summary||'')}</td>
+     <td>${badge(st==='COMPLETED',labels[st]||st,st)}<div class="visual-note">${esc(detail)}</div></td>
+     <td>${esc(r.confidence||'—')}</td>
+     <td>${esc(x.email_status||'Pending')}</td>
+     <td><button class="smallbtn" onclick="event.stopPropagation();openIncident('${esc(x.id)}')">View RCA</button></td>
+   </tr>`;
+ }).join(''):'<tr><td colspan="7" class="empty">No open investigations</td></tr>';
+
+ const coverage=a.length?Math.round(withRca.length/a.length*100)+'%':'—';
+ $('rca-coverage').textContent=coverage;
+}
+async function loadAll(){await refreshCurrentPage()}
+stabilize(['noderows','workrows','podrows','incidentrows','rca-rows','timeline-list','apps-rows','checks-rows','traffic-rows','helm-rows','gitops-rows','topology-resource-rows','topology-edges','node-orbit','node-condition','node-capacity','topology-summary','topology-groups']);
+const initialPage=location.hash.slice(1);navigateTo(initialPage||'overview');
+
+function cpNum(id){const t=$(id)?.textContent||'';const n=parseFloat(t.replace(/[^0-9.]/g,''));return Number.isFinite(n)?n:0}
+function cpPct(id){return Math.max(0,Math.min(100,cpNum(id)))}
+function updateVisualDashboards(){
+ const health=$('health')?.textContent||'—',cpu=$('cpu')?.textContent||'—',mem=$('memory')?.textContent||'—';
+ const set=(id,v)=>{if($(id))$(id).textContent=v};
+ set('ov-health',health);set('ov-cpu',cpu);set('ov-memory',mem);set('ov-nodes',$('nodes')?.textContent||'—');set('ov-pods',$('pods')?.textContent||'—');set('ov-failed',$('failed')?.textContent||'—');set('ov-incidents',$('incidents')?.textContent||'—');set('ov-deploy',$('deploy')?.textContent||'—');
+ set('ov-health-caption',$('healthsub')?.textContent||'Cluster telemetry');set('ov-node-status',$('nodestatus')?.innerText||'—');set('ov-pod-status',$('podsub')?.textContent||'—');set('ov-incident-status',$('incsub')?.textContent||'—');
+ const gauge=$('overview-gauge');if(gauge){const n=cpPct('health');gauge.style.background=`conic-gradient(#56dfb0 0 ${n}%,#20364b ${n}% 100%)`}
+ const cb=$('ov-cpu-bar'),mb=$('ov-memory-bar');if(cb)cb.style.width=cpPct('cpu')+'%';if(mb)mb.style.width=cpPct('memory')+'%';
+ const data=(typeof incidentData!=='undefined'?incidentData:[]);const count=sev=>data.filter(x=>x.severity===sev).length;const max=Math.max(1,...['CRITICAL','HIGH','MEDIUM','LOW'].map(count));
+ set('ic-open',data.filter(x=>x.status==='OPEN').length);set('ic-critical',count('CRITICAL'));set('ic-high',count('HIGH'));
+ for(const sev of ['CRITICAL','HIGH','MEDIUM','LOW']){const k=sev.toLowerCase(),v=count(sev),bar=$('ic-bar-'+k);set('ic-val-'+k,v);if(bar)bar.style.width=(v/max*100)+'%'}
+ const total=data.length;set('rca-coverage',total?Math.round(data.filter(x=>x.rca&&Object.keys(x.rca).length).length/total*100)+'%':'—');
+}
+const cpOriginalRefresh=refreshCurrentPage;
+refreshCurrentPage=async function(){await cpOriginalRefresh();updateVisualDashboards()};
+
+window.addEventListener('hashchange',()=>navigateTo(location.hash.slice(1)||'overview'));
+setInterval(()=>{if(!document.hidden)refreshCurrentPage()},30000);
+</script></body></html>

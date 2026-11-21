@@ -1,0 +1,24 @@
+# Optional ingress restriction. Apply only after confirming the Traefik pod labels
+# and namespace below match your installation.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: clusterpulse-ingress-from-traefik
+  namespace: clusterpulse
+spec:
+  podSelector:
+    matchLabels:
+      app: k8s-ai-rca-agent
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              # k3s ships Traefik in kube-system; a standalone install usually uses `traefik`.
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values: ["kube-system", "traefik"]
+      ports:
+        - protocol: TCP
+          port: 8080

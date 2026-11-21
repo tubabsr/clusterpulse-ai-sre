@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-ai-rca-agent
+  namespace: clusterpulse
+spec:
+  replicas: 1
+  # The agent runs in-process watchers; two replicas during a rolling update would duplicate incident handling.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: k8s-ai-rca-agent
+  template:
+    metadata:
+      labels:
+        app: k8s-ai-rca-agent
+      annotations:
+        clusterpulse.io/image-revision: "f8215432d5d40b86b349d945fe65b5e0e3d9887d"
+    spec:
+      serviceAccountName: k8s-ai-rca-agent
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+      - name: agent
+        image: "ghcr.io/singhgauravlinux-coder/clusterpulse-ai-sre:latest"
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: k8s-ai-rca-config
+        - secretRef:
+            name: k8s-ai-rca-secrets
+        readinessProbe:
+          httpGet: {path: /readyz, port: http}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet: {path: /healthz, port: http}
+          initialDelaySeconds: 20
+          periodSeconds: 20
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: {drop: ["ALL"]}
+        volumeMounts:
+        - {name: tmp, mountPath: /tmp}
+        startupProbe:
+          httpGet: {path: /healthz, port: http}
+          periodSeconds: 5
+          failureThreshold: 24
+        resources:
+          requests: {cpu: 100m, memory: 256Mi}
+          limits: {cpu: "1", memory: 1Gi}
+      volumes:
+      - {name: tmp, emptyDir: {}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-ai-rca-agent
+  namespace: clusterpulse
+spec:
+  selector:
+    app: k8s-ai-rca-agent
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
