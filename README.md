@@ -67,7 +67,7 @@ On the machine you deploy from (a server or workstation with cluster access):
 ### Clone the repository
 
 ```bash
-git clone https://github.com/singhgauravlinux-coder/clusterpulse-ai-sre.git
+git clone https://github.com/tubabsr/clusterpulse-ai-sre.git
 cd clusterpulse-ai-sre
 git pull            # later, to pick up newer manifests and the image-tag commit
 ```
